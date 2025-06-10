@@ -1,19 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
-
-const MOCK_SPONSEES = [
-  { id: 1, name: 'Jane Doe', age: 12, gender: 'Female', status: 'Available', bio: 'Loves math and soccer.' },
-  { id: 2, name: 'John Smith', age: 10, gender: 'Male', status: 'Available', bio: 'Enjoys reading and drawing.' },
-]
-
-const MOCK_HISTORY = [
-  { id: 1, sponsee: 'Jane Doe', type: 'Financial', amount: '$50', date: '2024-05-01', status: 'Delivered' },
-]
-
-const MOCK_MESSAGES = [
-  { id: 1, from: 'Jane Doe', message: 'Thank you for your support!', date: '2024-05-02', translated: '' },
-]
-
+import { sponseeAPI } from '../../services/api'
+import { useNotification } from '../../components/NotificationContext'
+import { messageAPI } from '../../services/api'
 const LANGUAGES = [
   { code: 'en', label: 'English' },
   { code: 'sw', label: 'Swahili' },
@@ -32,6 +21,7 @@ export default function Dashboard() {
 
   // Sponsee/adoption state
   const [adopted, setAdopted] = useState([])
+  const [availableSponsees, setAvailableSponsees] = useState([])
   const [showAdoptModal, setShowAdoptModal] = useState(false)
   const [selectedSponsee, setSelectedSponsee] = useState(null)
 
@@ -40,18 +30,40 @@ export default function Dashboard() {
   const [supportMsg, setSupportMsg] = useState('')
 
   // Messaging
-  const [messages, setMessages] = useState(MOCK_MESSAGES)
+  const [messages, setMessages] = useState([])
   const [messageText, setMessageText] = useState('')
   const [selectedLang, setSelectedLang] = useState('en')
   const [msgSuccess, setMsgSuccess] = useState('')
+const [activeSponsee, setActiveSponsee] = useState(null)
 
   // History
-  const [history, setHistory] = useState(MOCK_HISTORY)
+  const [history, setHistory] = useState([])
 
-  // Notification (mock)
+  // Notification
   const [notif, setNotif] = useState('')
+  const { showNotification } = useNotification()
 
-  // Profile handlers
+  // Fetch sponsees from backend
+  useEffect(() => {
+     if (activeSponsee) {
+    messageAPI.getMessages(activeSponsee.id).then(setMessages)
+  }
+    async function fetchSponsees() {
+      try {
+        const [adoptedRes, availableRes] = await Promise.all([
+          sponseeAPI.getAdopted(),
+          sponseeAPI.getAvailable(),
+        ])
+        setAdopted(adoptedRes)
+        setAvailableSponsees(availableRes)
+      } catch {
+        showNotification('Failed to load sponsees', 'error')
+      }
+    }
+    fetchSponsees()
+  }, [showNotification,activeSponsee])
+
+  // Profile handlers (still mock)
   const handleProfileChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value })
   }
@@ -61,12 +73,21 @@ export default function Dashboard() {
     setTimeout(() => setNotif(''), 2000)
   }
 
-  // Adopt sponsee
-  const handleAdopt = (sponsee) => {
-    setAdopted([...adopted, sponsee])
-    setShowAdoptModal(false)
-    setNotif(`You adopted ${sponsee.name}! (mock)`)
-    setTimeout(() => setNotif(''), 2000)
+  // Adopt sponsee (real API)
+  const handleAdopt = async (sponsee) => {
+    try {
+      const res = await sponseeAPI.adopt(sponsee.id)
+      if (res.message === 'Sponsee adopted') {
+        setAdopted([...adopted, sponsee])
+        setAvailableSponsees(availableSponsees.filter(s => s.id !== sponsee.id))
+        setShowAdoptModal(false)
+        showNotification(`You adopted ${sponsee.name}!`, 'success')
+      } else {
+        showNotification(res.message || 'Adoption failed', 'error')
+      }
+    } catch {
+      showNotification('Adoption failed', 'error')
+    }
   }
 
   // View sponsee profile
@@ -74,7 +95,7 @@ export default function Dashboard() {
     setSelectedSponsee(sponsee)
   }
 
-  // Support form
+  // Support form (still mock)
   const handleSupportChange = (e) => {
     setSupportForm({ ...supportForm, [e.target.name]: e.target.value })
   }
@@ -100,26 +121,15 @@ export default function Dashboard() {
     setTimeout(() => setSupportMsg(''), 2000)
   }
 
-  // Messaging
-  const handleSendMessage = (e) => {
-    e.preventDefault()
-    if (!messageText.trim()) return
-    setMessages([
-      ...messages,
-      {
-        id: messages.length + 1,
-        from: 'You',
-        message: messageText,
-        date: new Date().toISOString().slice(0, 10),
-        translated: '',
-      },
-    ])
-    setMessageText('')
-    setMsgSuccess('Message sent! (mock)')
-    showNotification('Message sent', 'success')
-
-    setTimeout(() => setMsgSuccess(''), 2000)
-  }
+  // Messaging 
+const handleSendMessage = async (e) => {
+  e.preventDefault()
+  if (!messageText.trim() || !activeSponsee) return
+  await messageAPI.sendMessage(activeSponsee.id, messageText)
+  setMessageText('')
+  // Refresh messages
+  messageAPI.getMessages(activeSponsee.id).then(setMessages)
+}
   const handleTranslate = (msgId) => {
     setMessages(messages.map(msg =>
       msg.id === msgId
@@ -211,7 +221,10 @@ export default function Dashboard() {
               {adopted.map((s) => (
                 <li key={s.id} className="mb-2 flex items-center justify-between">
                   <span>
-                    <span className="font-semibold">{s.name}</span> ({s.age} yrs, {s.gender})
+                    <span className="font-semibold">{s.name}</span>
+                    {s.SponseeProfile && (
+                      <> ({s.SponseeProfile.age || 'N/A'} yrs, {s.SponseeProfile.gender || 'N/A'})</>
+                    )}
                   </span>
                   <button
                     className="text-blue-700 hover:underline ml-2"
@@ -230,9 +243,9 @@ export default function Dashboard() {
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
             <div className="bg-white rounded shadow-lg p-6 w-full max-w-md">
               <h3 className="text-lg font-bold mb-2">{selectedSponsee.name}'s Profile</h3>
-              <div><span className="font-semibold">Age:</span> {selectedSponsee.age}</div>
-              <div><span className="font-semibold">Gender:</span> {selectedSponsee.gender}</div>
-              <div><span className="font-semibold">Bio:</span> {selectedSponsee.bio}</div>
+              <div><span className="font-semibold">Age:</span> {selectedSponsee.SponseeProfile?.age || 'N/A'}</div>
+              <div><span className="font-semibold">Gender:</span> {selectedSponsee.SponseeProfile?.gender || 'N/A'}</div>
+              <div><span className="font-semibold">Bio:</span> {selectedSponsee.SponseeProfile?.bio || 'N/A'}</div>
               <button
                 className="mt-4 text-blue-700 hover:underline"
                 onClick={() => setSelectedSponsee(null)}
@@ -249,9 +262,14 @@ export default function Dashboard() {
             <div className="bg-white rounded shadow-lg p-6 w-full max-w-md">
               <h3 className="text-lg font-bold mb-4">Available Sponsees</h3>
               <ul>
-                {MOCK_SPONSEES.filter(s => !adopted.some(a => a.id === s.id)).map((s) => (
+                {availableSponsees.map((s) => (
                   <li key={s.id} className="flex items-center justify-between mb-2">
-                    <span>{s.name} ({s.age} yrs, {s.gender})</span>
+                    <span>
+                      {s.name}
+                      {s.SponseeProfile && (
+                        <> ({s.SponseeProfile.age || 'N/A'} yrs, {s.SponseeProfile.gender || 'N/A'})</>
+                      )}
+                    </span>
                     <button
                       className="bg-blue-700 text-white px-3 py-1 rounded hover:bg-blue-800"
                       onClick={() => handleAdopt(s)}
@@ -346,67 +364,95 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Messaging UI Section */}
-        <div className="bg-white rounded shadow p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-            <h2 className="text-xl font-semibold">Messages with Sponsees</h2>
-            <div className="flex items-center gap-2">
-              <label htmlFor="lang" className="text-gray-600">Translate to:</label>
-              <select
-                id="lang"
-                className="border rounded px-2 py-1"
-                value={selectedLang}
-                onChange={e => setSelectedLang(e.target.value)}
-              >
-                {LANGUAGES.map(l => (
-                  <option key={l.code} value={l.code}>{l.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          {messages.length === 0 ? (
-            <div className="text-gray-500">No messages yet.</div>
-          ) : (
-            <ul>
-              {messages.map((msg) => (
-                <li key={msg.id} className="mb-4">
-                  <div>
-                    <span className="font-semibold">{msg.from}:</span> {msg.message}
-                    <span className="ml-2 text-gray-400 text-xs">{msg.date}</span>
-                  </div>
-                  {msg.from !== 'You' && (
-                    <button
-                      className="text-blue-700 text-xs mt-1 hover:underline"
-                      onClick={() => handleTranslate(msg.id)}
-                    >
-                      Translate
-                    </button>
-                  )}
-                  {msg.translated && (
-                    <div className="text-green-700 text-xs mt-1">{msg.translated}</div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          {/* Send Message Form */}
-          <form onSubmit={handleSendMessage} className="mt-4 flex flex-col md:flex-row gap-2">
-            <input
-              type="text"
-              className="border rounded px-3 py-2 flex-1"
-              placeholder="Type your message to your sponsee..."
-              value={messageText}
-              onChange={e => setMessageText(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
-            >
-              Send
-            </button>
-          </form>
-          {msgSuccess && <div className="mt-2 text-green-600">{msgSuccess}</div>}
-        </div>
+       {/* Messaging UI Section */}
+<div className="bg-white rounded shadow p-6">
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+    <h2 className="text-xl font-semibold">Messages with Sponsees</h2>
+    <div className="flex items-center gap-2">
+      <label htmlFor="lang" className="text-gray-600">Translate to:</label>
+      <select
+        id="lang"
+        className="border rounded px-2 py-1"
+        value={selectedLang}
+        onChange={e => setSelectedLang(e.target.value)}
+      >
+        {LANGUAGES.map(l => (
+          <option key={l.code} value={l.code}>{l.label}</option>
+        ))}
+      </select>
+    </div>
+  </div>
+  {/* Sponsee selector */}
+  <div className="mb-4">
+    <label className="font-semibold mr-2">Select Sponsee:</label>
+    <select
+      className="border rounded px-2 py-1"
+      value={activeSponsee?.id || ''}
+      onChange={e => {
+        const sponsee = adopted.find(s => s.id === Number(e.target.value))
+        setActiveSponsee(sponsee)
+      }}
+    >
+      <option value="">-- Choose --</option>
+      {adopted.map(s => (
+        <option key={s.id} value={s.id}>{s.name}</option>
+      ))}
+    </select>
+  </div>
+  {activeSponsee ? (
+    <>
+      {messages.length === 0 ? (
+        <div className="text-gray-500">No messages yet.</div>
+      ) : (
+        <ul>
+          {messages.map((msg) => (
+            <li key={msg.id} className="mb-4">
+              <div>
+                <span className="font-semibold">
+                  {msg.from_id === activeSponsee.id ? activeSponsee.name : 'You'}:
+                </span> {msg.content}
+                <span className="ml-2 text-gray-400 text-xs">
+                  {new Date(msg.date).toLocaleDateString()}
+                </span>
+              </div>
+              {/* Optionally, translation button */}
+              {msg.from_id === activeSponsee.id && (
+                <button
+                  className="text-blue-700 text-xs mt-1 hover:underline"
+                  onClick={() => handleTranslate(msg.id)}
+                >
+                  Translate
+                </button>
+              )}
+              {msg.translated && (
+                <div className="text-green-700 text-xs mt-1">{msg.translated}</div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      {/* Send Message Form */}
+      <form onSubmit={handleSendMessage} className="mt-4 flex flex-col md:flex-row gap-2">
+        <input
+          type="text"
+          className="border rounded px-3 py-2 flex-1"
+          placeholder={`Type your message to ${activeSponsee.name}...`}
+          value={messageText}
+          onChange={e => setMessageText(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-800"
+        >
+          Send
+        </button>
+      </form>
+      {msgSuccess && <div className="mt-2 text-green-600">{msgSuccess}</div>}
+    </>
+  ) : (
+    <div className="text-gray-500">Select a sponsee to view and send messages.</div>
+  )}
+</div>
       </div>
     </div>
   )

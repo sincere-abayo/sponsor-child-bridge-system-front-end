@@ -1,19 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/Navbar'
+import { useNotification } from '../../components/NotificationContext'
 
-const MOCK_SPONSOR = {
-  name: 'Mary Sponsor',
-  email: 'mary.sponsor@email.com',
-  country: 'Kenya',
-}
-
-const MOCK_SUPPORT = [
-  { id: 1, type: 'Financial', amount: '$50', date: '2024-05-01', status: 'Delivered' },
-]
-
-const MOCK_MESSAGES = [
-  { id: 1, from: 'Mary Sponsor', message: 'Glad to support you!', date: '2024-05-02', translated: '' },
-]
+// You should implement these API calls in services/api.js
+import { sponseeAPI } from '../../services/api'
 
 const LANGUAGES = [
   { code: 'en', label: 'English' },
@@ -22,35 +12,59 @@ const LANGUAGES = [
 ]
 
 export default function SponseeDashboard() {
-  const [support] = useState(MOCK_SUPPORT)
-  const [messages, setMessages] = useState(MOCK_MESSAGES)
+  const [sponsor, setSponsor] = useState(null)
+  const [support, setSupport] = useState([])
+  const [messages, setMessages] = useState([])
   const [photo, setPhoto] = useState(null)
   const [uploadMsg, setUploadMsg] = useState('')
   const [reply, setReply] = useState('')
   const [replyMsg, setReplyMsg] = useState('')
   const [selectedLang, setSelectedLang] = useState('en')
+  const { showNotification } = useNotification()
+
+  // Fetch sponsor info, support, and messages on mount
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // These endpoints should be implemented in your backend
+        const sponsorRes = await sponseeAPI.getSponsor()
+        setSponsor(sponsorRes)
+
+        const supportRes = await sponseeAPI.getSupport()
+        setSupport(supportRes)
+
+        const messagesRes = await sponseeAPI.getMessages()
+        setMessages(messagesRes)
+      } catch (err) {
+        showNotification('Failed to load dashboard data', 'error')
+      }
+    }
+    fetchData()
+  }, [])
 
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0])
     setUploadMsg('')
   }
 
-  const handlePhotoUpload = (e) => {
+  const handlePhotoUpload = async (e) => {
     e.preventDefault()
     if (!photo) {
       setUploadMsg('Please select a photo to upload.')
       return
     }
+    // Replace with real upload API call
     setUploadMsg('Photo uploaded! (mock)')
     setPhoto(null)
   }
 
-  const handleReply = (e) => {
+  const handleReply = async (e) => {
     e.preventDefault()
     if (!reply.trim()) {
       setReplyMsg('Please enter a reply.')
       return
     }
+    // Replace with real send message API call
     setMessages([
       ...messages,
       {
@@ -84,9 +98,15 @@ export default function SponseeDashboard() {
         {/* Sponsor Info */}
         <div className="bg-white rounded shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-2">Your Sponsor</h2>
-          <div className="mb-2"><span className="font-semibold">Name:</span> {MOCK_SPONSOR.name}</div>
-          <div className="mb-2"><span className="font-semibold">Email:</span> {MOCK_SPONSOR.email}</div>
-          <div><span className="font-semibold">Country:</span> {MOCK_SPONSOR.country}</div>
+          {sponsor ? (
+            <>
+              <div className="mb-2"><span className="font-semibold">Name:</span> {sponsor.name}</div>
+              <div className="mb-2"><span className="font-semibold">Email:</span> {sponsor.email}</div>
+              <div><span className="font-semibold">Country:</span> {sponsor.country}</div>
+            </>
+          ) : (
+            <div className="text-gray-500">No sponsor assigned yet.</div>
+          )}
         </div>
 
         {/* Support Received */}

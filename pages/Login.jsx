@@ -31,8 +31,24 @@ export default function Login() {
       setShowSuccess(true)
       // Optionally save token: 
       localStorage.setItem('token', res.token)
-      setTimeout(() => navigate('sponsor/dashboard'), 2000)
-    } else {
+      const role = res.user.role
+      if (role === 'sponsor') {
+        
+        setTimeout(() => navigate('/sponsor/dashboard'), 2000)
+
+      }
+      if (role === 'sponsee') {
+        
+
+      setTimeout(() => navigate('/sponsee/dashboard'), 2000)
+      
+    } 
+    if (role === 'admin') {
+        
+        setTimeout(() => navigate('/admin/dashboard'), 2000)
+      }
+  }
+  else {
       setFormError(res.message || 'Login failed')
     }
   } catch {

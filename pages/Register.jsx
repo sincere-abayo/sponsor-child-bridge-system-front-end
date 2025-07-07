@@ -11,7 +11,6 @@ export default function Register() {
     password: '',
     confirmPassword: '',
     phone: '',
-    role: 'sponsor',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -182,33 +181,20 @@ const handleSubmit = async (e) => {
                 autoComplete="tel"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 font-semibold mb-1" htmlFor="role">
-                Role
-              </label>
-              <select
-                id="role"
-                name="role"
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                value={formData.role}
-                onChange={handleChange}
-              >
-                <option value="sponsor">Sponsor</option>
-                <option value="sponsee">Sponsee</option>
-              </select>
-            </div>
             <button
               type="submit"
-              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition"
+              className="w-full bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-800 font-semibold transition-colors"
             >
               Create Account
             </button>
           </form>
-          <div className="text-center mt-4 text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="text-blue-700 font-semibold hover:underline">
-              Sign in
-            </Link>
+          <div className="text-center mt-6">
+            <p className="text-gray-600">
+              Already have an account?{' '}
+              <Link to="/login" className="text-blue-700 font-semibold hover:underline">
+                Sign In
+              </Link>
+            </p>
           </div>
         </div>
       </div>

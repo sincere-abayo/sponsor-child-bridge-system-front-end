@@ -29,26 +29,9 @@ export default function Login() {
     const res = await authAPI.login(formData)
     if (res.token) {
       setShowSuccess(true)
-      // Optionally save token: 
       localStorage.setItem('token', res.token)
-      const role = res.user.role
-      if (role === 'sponsor') {
-        
-        setTimeout(() => navigate('/sponsor/dashboard'), 2000)
-
-      }
-      if (role === 'sponsee') {
-        
-
-      setTimeout(() => navigate('/sponsee/dashboard'), 2000)
-      
-    } 
-    if (role === 'admin') {
-        
-        setTimeout(() => navigate('/admin/dashboard'), 2000)
-      }
-  }
-  else {
+      setTimeout(() => navigate('/'), 2000)
+    } else {
       setFormError(res.message || 'Login failed')
     }
   } catch {

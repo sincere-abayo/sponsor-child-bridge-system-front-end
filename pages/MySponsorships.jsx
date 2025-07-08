@@ -219,7 +219,7 @@ export default function MySponsorships() {
                       {sponsorship.proofFile && (
                         <div>
                           <span className="font-medium text-gray-600">Proof:</span>
-                          <a href={sponsorship.proofFile} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View File</a>
+                          <a href={`http://localhost:5000${sponsorship.proofFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View File</a>
                         </div>
                       )}
                     </div>

@@ -1,10 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 export default function Sidebar() {
   const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const userRole = localStorage.getItem('userRole')
+  const token = localStorage.getItem('token')
+  const [stats, setStats] = useState(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+
+  useEffect(() => {
+    if (!token) return
+    setStatsLoading(true)
+    fetch('/api/sponsorships/quick-stats', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.json())
+      .then(setStats)
+      .catch(() => setStats(null))
+      .finally(() => setStatsLoading(false))
+  }, [token])
 
   const isActive = (path) => location.pathname === path
 
@@ -181,41 +196,32 @@ export default function Sidebar() {
           <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-4">
             <h3 className="text-sm font-semibold text-gray-900 mb-2">Quick Stats</h3>
             <div className="space-y-2">
-              {userRole === 'sponsor' && (
+              {statsLoading ? (
+                <div className="text-gray-500 text-sm">Loading...</div>
+              ) : userRole === 'sponsor' && stats ? (
                 <>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Active Sponsorships</span>
-                    <span className="font-semibold text-green-600">3</span>
+                    <span className="font-semibold text-green-600">{stats.activeSponsorships}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Total Donated</span>
-                    <span className="font-semibold text-green-600">150,000 RWF</span>
+                    <span className="font-semibold text-green-600">{stats.totalDonated?.toLocaleString('en-RW')} RWF</span>
                   </div>
                 </>
-              )}
-              {userRole === 'sponsee' && (
+              ) : userRole === 'sponsee' && stats ? (
                 <>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Current Sponsor</span>
-                    <span className="font-semibold text-blue-600">1</span>
+                    <span className="font-semibold text-blue-600">{stats.currentSponsors}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Support Received</span>
-                    <span className="font-semibold text-blue-600">50,000 RWF</span>
+                    <span className="font-semibold text-blue-600">{stats.supportReceived?.toLocaleString('en-RW')} RWF</span>
                   </div>
                 </>
-              )}
-              {userRole === 'admin' && (
-                <>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Total Users</span>
-                    <span className="font-semibold text-purple-600">1,234</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Active Sponsorships</span>
-                    <span className="font-semibold text-purple-600">567</span>
-                  </div>
-                </>
+              ) : (
+                <div className="text-gray-500 text-sm">No stats available</div>
               )}
             </div>
           </div>

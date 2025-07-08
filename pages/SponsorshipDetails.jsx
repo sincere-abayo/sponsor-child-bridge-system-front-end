@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { sponsorshipAPI } from '../services/api'
+import { sponsorshipAPI, confirmationAPI } from '../services/api'
 import { useNotification } from '../components/NotificationContext'
 import Layout from '../components/Layout'
 
@@ -11,9 +11,23 @@ export default function SponsorshipDetails() {
   const [loading, setLoading] = useState(true)
   const [sponsorship, setSponsorship] = useState(null)
   const [userRole] = useState(localStorage.getItem('userRole'))
+  const [confirmations, setConfirmations] = useState([])
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [confirmForm, setConfirmForm] = useState({ notes: '', proofFile: null })
+  const userId = parseInt(localStorage.getItem('userId'))
+  const [confirmingId, setConfirmingId] = useState(null)
+  const [reviewerNotes, setReviewerNotes] = useState('')
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}')
+  const isSponsor = sponsorship && sponsorship.sponsorId && userData.id
+    ? sponsorship.sponsorId === userData.id
+    : false;
+  console.log('userData', userData, 'sponsorId', sponsorship?.sponsorId, 'isSponsor', isSponsor)
 
   useEffect(() => {
     loadSponsorship()
+    loadConfirmations()
+    // Debug: log sponsor info
+    console.log('userId', userId, 'sponsorId', sponsorship?.sponsorId, 'isSponsor', isSponsor)
   }, [id])
 
   const loadSponsorship = async () => {
@@ -35,6 +49,24 @@ export default function SponsorshipDetails() {
     }
   }
 
+  const loadConfirmations = async () => {
+    try {
+      setConfirmLoading(true)
+      const data = await confirmationAPI.getConfirmations(id)
+      setConfirmations(data)
+      // Debug: log confirmations status
+      if (Array.isArray(data)) {
+        data.forEach((c, idx) => {
+          console.log(`Confirmation #${idx + 1}: status=${c.status}, id=${c.id}`)
+        })
+      }
+    } catch (e) {
+      setConfirmations([])
+    } finally {
+      setConfirmLoading(false)
+    }
+  }
+
   const handleStatusUpdate = async (newStatus) => {
     try {
       const response = await sponsorshipAPI.updateSponsorshipStatus(id, {
@@ -50,6 +82,56 @@ export default function SponsorshipDetails() {
     } catch (error) {
       console.error('Error updating status:', error)
       showNotification('Failed to update sponsorship status', 'error')
+    }
+  }
+
+  const handleConfirmFormChange = (e) => {
+    const { name, value, files } = e.target
+    setConfirmForm(f => ({
+      ...f,
+      [name]: files ? files[0] : value
+    }))
+  }
+
+  const handleConfirmSubmit = async (e) => {
+    e.preventDefault()
+    if (!confirmForm.proofFile) {
+      showNotification('Please upload a proof file', 'error')
+      return
+    }
+    try {
+      setConfirmLoading(true)
+      await confirmationAPI.createConfirmation({
+        sponsorshipId: id,
+        notes: confirmForm.notes,
+        proofFile: confirmForm.proofFile
+      })
+      showNotification('Confirmation submitted!', 'success')
+      setConfirmForm({ notes: '', proofFile: null })
+      loadConfirmations()
+    } catch (e) {
+      showNotification('Failed to submit confirmation', 'error')
+    } finally {
+      setConfirmLoading(false)
+    }
+  }
+
+  const handleVerify = async (confirmationId, status) => {
+    if (status === 'confirmed' && reviewerNotes.trim() === '' && confirmingId === confirmationId) {
+      showNotification('Please enter a comment before confirming.', 'error')
+      return
+    }
+    try {
+      setConfirmLoading(true)
+      await confirmationAPI.updateConfirmationStatus(confirmationId, status === 'confirmed' ? { status, reviewerNotes } : { status })
+      showNotification('Confirmation status updated', 'success')
+      setReviewerNotes('')
+      setConfirmingId(null)
+      loadConfirmations()
+    } catch (e) {
+      showNotification('Failed to update status', 'error')
+    } finally {
+      setConfirmLoading(false)
     }
   }
 
@@ -88,8 +170,6 @@ export default function SponsorshipDetails() {
       currency: 'RWF'
     }).format(amount)
   }
-
-  const isSponsor = sponsorship?.sponsorId === parseInt(localStorage.getItem('userId'))
 
   if (loading) {
     return (
@@ -250,6 +330,122 @@ export default function SponsorshipDetails() {
                 </div>
               )}
             </div>
+
+            {/* --- Confirmation Section --- */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Confirmations & Proof</h2>
+              {/* Sponsee Confirmation Form */}
+              {userRole === 'sponsee' && sponsorship.status === 'active' && (
+                <form onSubmit={handleConfirmSubmit} className="mb-6 space-y-4">
+                  <div>
+                    <label className="block font-medium mb-1">Proof File <span className="text-red-500">*</span></label>
+                    <input type="file" name="proofFile" accept="image/*,application/pdf" onChange={handleConfirmFormChange} required className="block w-full" />
+                  </div>
+                  <div>
+                    <label className="block font-medium mb-1">Notes</label>
+                    <textarea name="notes" value={confirmForm.notes} onChange={handleConfirmFormChange} className="block w-full border rounded p-2" rows={2} placeholder="Add any notes (optional)" />
+                  </div>
+                  <button type="submit" disabled={confirmLoading} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50">
+                    {confirmLoading ? 'Submitting...' : 'Submit Confirmation'}
+                  </button>
+                </form>
+              )}
+
+              {/* Confirmation List */}
+              <div>
+                {confirmLoading ? (
+                  <div className="text-gray-500">Loading confirmations...</div>
+                ) : !Array.isArray(confirmations) ? (
+                  <div className="text-red-500">Failed to load confirmations.</div>
+                ) : confirmations.length === 0 ? (
+                  <div className="text-gray-500">No confirmations submitted yet.</div>
+                ) : (
+                  <table className="min-w-full text-sm border">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="p-2 border">#</th>
+                        <th className="p-2 border">Status</th>
+                        <th className="p-2 border">Proof</th>
+                        <th className="p-2 border">Notes</th>
+                        <th className="p-2 border">Reviewer Notes</th>
+                        <th className="p-2 border">By</th>
+                        <th className="p-2 border">Date</th>
+                        {isSponsor && <th className="p-2 border">Actions</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {confirmations.map((c, idx) => (
+                        <tr key={c.id} className="border-t">
+                          <td className="p-2 border text-center">{idx + 1}</td>
+                          <td className="p-2 border text-center">
+                            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              c.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                              c.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {c.status.charAt(0).toUpperCase() + c.status.slice(1)}
+                            </span>
+                          </td>
+                          <td className="p-2 border text-center">
+                            {c.proofFile ? (
+                              <a href={`http://localhost:5000/${c.proofFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View</a>
+                            ) : 'N/A'}
+                          </td>
+                          <td className="p-2 border">{c.notes || '-'}</td>
+                          <td className="p-2 border text-green-700 italic">{c.reviewerNotes || '-'}</td>
+                          <td className="p-2 border">{c.confirmer?.name || 'User #' + c.confirmedBy}</td>
+                          <td className="p-2 border">{c.createdAt ? formatDate(c.createdAt) : '-'}</td>
+                          {isSponsor && (
+                            <td className="p-2 border text-center">
+                              {c.status === 'pending' && (
+                                confirmingId === c.id ? (
+                                  <div className="space-y-2">
+                                    <textarea
+                                      className="w-full border rounded p-1 text-sm"
+                                      rows={2}
+                                      placeholder="Enter a comment (required)"
+                                      value={reviewerNotes}
+                                      onChange={e => setReviewerNotes(e.target.value)}
+                                    />
+                                    <div className="flex gap-2 justify-center">
+                                      <button
+                                        onClick={() => handleVerify(c.id, 'confirmed')}
+                                        className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-xs"
+                                        disabled={confirmLoading}
+                                      >
+                                        {confirmLoading ? 'Saving...' : 'Submit'}
+                                      </button>
+                                      <button
+                                        onClick={() => { setConfirmingId(null); setReviewerNotes('') }}
+                                        className="px-2 py-1 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 text-xs"
+                                        disabled={confirmLoading}
+                                      >
+                                        Cancel
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => { setConfirmingId(c.id); setReviewerNotes('') }}
+                                    className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 mr-2"
+                                  >
+                                    Confirm
+                                  </button>
+                                )
+                              )}
+                              {c.status === 'confirmed' && (
+                                <span className="text-green-600 font-semibold">Verified</span>
+                              )}
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+            {/* --- End Confirmation Section --- */}
 
             {/* Participant Details */}
             <div className="bg-white rounded-lg shadow-lg p-6">

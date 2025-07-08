@@ -131,3 +131,44 @@ export const sponsorshipAPI = {
     }).then(res => res.json())
   },
 }
+
+// Confirmation API functions
+export const confirmationAPI = {
+  createConfirmation: (data) => {
+    const token = localStorage.getItem('token')
+    const formData = new FormData()
+    for (const key in data) {
+      if (data[key] !== undefined && data[key] !== null) {
+        formData.append(key, data[key])
+      }
+    }
+    return fetch(`${API_URL}/confirmations`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    }).then(res => res.json())
+  },
+
+  getConfirmations: (sponsorshipId) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/confirmations/${sponsorshipId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  updateConfirmationStatus: (id, data) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/confirmations/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json())
+  },
+}

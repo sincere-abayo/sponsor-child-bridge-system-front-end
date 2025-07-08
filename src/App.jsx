@@ -12,6 +12,11 @@ import { NotificationProvider } from '../components/NotificationContext'
 import Layout from '../components/Layout'
 import Messages from '../pages/Messages'
 
+// Admin pages
+import AdminDashboard from '../pages/admin/AdminDashboard'
+import AdminUsers from '../pages/admin/AdminUsers'
+import AdminSponsorships from '../pages/admin/AdminSponsorships'
+
 // Placeholder components for sidebar navigation
 const Dashboard = () => (
   <Layout>
@@ -102,6 +107,11 @@ function App() {
           <Route path="/messages" element={<Messages />} />
           <Route path="/donations" element={<Donations />} />
           <Route path="/progress" element={<Progress />} />
+          
+          {/* Admin routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/sponsorships" element={<AdminSponsorships />} />
         </Routes>
       </Router>
     </NotificationProvider>

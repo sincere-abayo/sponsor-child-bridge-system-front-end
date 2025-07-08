@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useNotification } from '../components/NotificationContext'
 import { authAPI, profileAPI } from '../services/api'
+import Layout from '../components/Layout'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -10,6 +11,7 @@ export default function Profile() {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [activeTab, setActiveTab] = useState('profile')
 
   // Simplified form states
   const [sponsorForm, setSponsorForm] = useState({
@@ -122,12 +124,14 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading profile...</p>
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading profile...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     )
   }
 
@@ -136,53 +140,139 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {user.role === 'sponsor' ? 'Sponsor Profile' : 'Sponsee Profile'}
-          </h1>
-          <p className="text-gray-600">
-            {user.role === 'sponsor' 
-              ? 'Complete your profile to help children in need' 
-              : 'Tell us about yourself to connect with sponsors'
-            }
-          </p>
-          <div className="mt-4 inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-            {user.name} • {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+    <Layout>
+      <div className="max-w-6xl mx-auto">
+        {/* Profile Header */}
+        <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+          <div className="flex items-center space-x-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{user.name}</h1>
+              <div className="flex items-center space-x-4">
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  user.role === 'sponsor' ? 'bg-green-100 text-green-800' :
+                  user.role === 'sponsee' ? 'bg-blue-100 text-blue-800' :
+                  'bg-purple-100 text-purple-800'
+                }`}>
+                  <span className="mr-1">
+                    {user.role === 'sponsor' ? '🤝' : user.role === 'sponsee' ? '👨‍🎓' : '⚙️'}
+                  </span>
+                  {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                </span>
+                <span className="text-gray-500">•</span>
+                <span className="text-gray-600">{user.email}</span>
+                {user.phone && (
+                  <>
+                    <span className="text-gray-500">•</span>
+                    <span className="text-gray-600">{user.phone}</span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-500">Member since</div>
+              <div className="font-semibold text-gray-900">2024</div>
+            </div>
           </div>
         </div>
 
-        {/* Profile Form */}
-        {user.role === 'sponsor' ? (
-          <SponsorProfileForm
-            form={sponsorForm}
-            onChange={handleSponsorChange}
-            onSubmit={handleSponsorSubmit}
-            saving={saving}
-          />
-        ) : user.role === 'sponsee' ? (
-          <SponseeProfileForm
-            form={sponseeForm}
-            onChange={handleSponseeChange}
-            onSubmit={handleSponseeSubmit}
-            saving={saving}
-          />
-        ) : null}
+        {/* Tabs */}
+        <div className="bg-white rounded-xl shadow-sm border mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8 px-6">
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'profile'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Profile Information
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'settings'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Account Settings
+              </button>
+              <button
+                onClick={() => setActiveTab('security')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'security'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Security
+              </button>
+            </nav>
+          </div>
+
+          <div className="p-6">
+            {activeTab === 'profile' && (
+              <div>
+                {user.role === 'sponsor' ? (
+                  <SponsorProfileForm
+                    form={sponsorForm}
+                    onChange={handleSponsorChange}
+                    onSubmit={handleSponsorSubmit}
+                    saving={saving}
+                    profile={profile}
+                  />
+                ) : user.role === 'sponsee' ? (
+                  <SponseeProfileForm
+                    form={sponseeForm}
+                    onChange={handleSponseeChange}
+                    onSubmit={handleSponseeSubmit}
+                    saving={saving}
+                    profile={profile}
+                  />
+                ) : null}
+              </div>
+            )}
+
+            {activeTab === 'settings' && (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">⚙️</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Account Settings</h3>
+                <p className="text-gray-600">Settings page coming soon...</p>
+              </div>
+            )}
+
+            {activeTab === 'security' && (
+              <div className="text-center py-12">
+                <div className="text-gray-400 text-6xl mb-4">🔒</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Security Settings</h3>
+                <p className="text-gray-600">Security settings coming soon...</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </Layout>
   )
 }
 
-// Simplified Sponsor Profile Form
-function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
+// Modern Sponsor Profile Form
+function SponsorProfileForm({ form, onChange, onSubmit, saving, profile }) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
+    <div>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Sponsor Profile</h2>
+        <p className="text-gray-600">Complete your profile to help children in need</p>
+      </div>
+
       <form onSubmit={onSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Occupation
             </label>
             <input
@@ -190,21 +280,21 @@ function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
               name="occupation"
               value={form.occupation}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
-              placeholder="e.g., Teacher, Engineer"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+              placeholder="e.g., Teacher, Engineer, Doctor"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Income Level
             </label>
             <select
               name="incomeRange"
               value={form.incomeRange}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               required
             >
               <option value="low">Low Income</option>
@@ -214,15 +304,15 @@ function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
             </select>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Sponsorship Type
             </label>
             <select
               name="preferredSponsorshipType"
               value={form.preferredSponsorshipType}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               required
             >
               <option value="monthly">Monthly</option>
@@ -232,8 +322,8 @@ function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
             </select>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Max Amount Per Month (RWF)
             </label>
             <input
@@ -241,14 +331,14 @@ function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
               name="maxAmountPerMonth"
               value={form.maxAmountPerMonth}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               placeholder="e.g., 50000"
               required
             />
           </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="md:col-span-2 space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Preferred Location
             </label>
             <input
@@ -256,14 +346,14 @@ function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
               name="preferredLocation"
               value={form.preferredLocation}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
               placeholder="e.g., Kigali, Rwanda"
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
             About You
           </label>
           <textarea
@@ -271,18 +361,31 @@ function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
             value={form.bio}
             onChange={onChange}
             rows={4}
-            className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
             placeholder="Tell us about yourself and why you want to help children..."
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
             disabled={saving}
-            className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-colors"
+            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {saving ? 'Saving...' : 'Save Profile'}
+            {saving ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>Saving...</span>
+              </div>
+            ) : (
+              'Save Profile'
+            )}
           </button>
         </div>
       </form>
@@ -290,14 +393,19 @@ function SponsorProfileForm({ form, onChange, onSubmit, saving }) {
   )
 }
 
-// Simplified Sponsee Profile Form
-function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
+// Modern Sponsee Profile Form
+function SponseeProfileForm({ form, onChange, onSubmit, saving, profile }) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
+    <div>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Sponsee Profile</h2>
+        <p className="text-gray-600">Tell us about yourself to connect with sponsors</p>
+      </div>
+
       <form onSubmit={onSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Age
             </label>
             <input
@@ -305,21 +413,21 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
               name="age"
               value={form.age}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="e.g., 12"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Gender
             </label>
             <select
               name="gender"
               value={form.gender}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               required
             >
               <option value="male">Male</option>
@@ -327,8 +435,8 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
             </select>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Location
             </label>
             <input
@@ -336,21 +444,21 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
               name="location"
               value={form.location}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="e.g., Kigali, Rwanda"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Family Situation
             </label>
             <select
               name="familySituation"
               value={form.familySituation}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               required
             >
               <option value="orphan">Orphan</option>
@@ -360,8 +468,8 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
             </select>
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               School Name
             </label>
             <input
@@ -369,13 +477,13 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
               name="schoolName"
               value={form.schoolName}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="e.g., G.S. Kigali"
             />
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Grade/Class
             </label>
             <input
@@ -383,13 +491,13 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
               name="grade"
               value={form.grade}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="e.g., Primary 5"
             />
           </div>
 
-          <div className="md:col-span-2">
-            <label className="block text-gray-700 font-semibold mb-2">
+          <div className="md:col-span-2 space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
               Monthly Family Income (RWF)
             </label>
             <input
@@ -397,14 +505,14 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
               name="monthlyIncome"
               value={form.monthlyIncome}
               onChange={onChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
               placeholder="e.g., 50000"
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
             About You
           </label>
           <textarea
@@ -412,19 +520,32 @@ function SponseeProfileForm({ form, onChange, onSubmit, saving }) {
             value={form.bio}
             onChange={onChange}
             rows={4}
-            className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500 transition-colors"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             placeholder="Tell us about yourself, your interests, and what you need help with..."
             required
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
             disabled={saving}
-            className="bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-semibold transition-colors"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
-            {saving ? 'Saving...' : 'Save Profile'}
+            {saving ? (
+              <div className="flex items-center space-x-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>Saving...</span>
+              </div>
+            ) : (
+              'Save Profile'
+            )}
           </button>
         </div>
       </form>

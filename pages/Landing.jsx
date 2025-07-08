@@ -1,11 +1,8 @@
 import React from 'react'
-import Navbar from '../components/Navbar'
 
 export default function Landing() {
   return (
     <div>
-      <Navbar />
-
       {/* Hero Section */}
       <header className="relative flex items-center justify-center h-[70vh] bg-gradient-to-br from-green-600 to-blue-600">
         <div className="absolute inset-0 bg-black opacity-20"></div>

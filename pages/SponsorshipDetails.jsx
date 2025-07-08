@@ -149,25 +149,51 @@ export default function SponsorshipDetails() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Sponsorship Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-3">Financial Details</h3>
+                  <h3 className="font-medium text-gray-900 mb-3">Sponsorship Details</h3>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Amount:</span>
-                      <span className="font-semibold text-green-600 text-lg">
-                        {formatCurrency(sponsorship.amount)}
-                      </span>
+                      <span className="text-gray-600">Type:</span>
+                      <span className="capitalize font-semibold">{sponsorship.type?.replace('_', ' ')}</span>
                     </div>
+                    {sponsorship.type === 'money' ? (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Amount:</span>
+                        <span className="font-semibold text-green-600 text-lg">{formatCurrency(sponsorship.amount)}</span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Value/Description:</span>
+                        <span className="text-green-700 font-semibold">{sponsorship.value || 'N/A'}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span className="text-gray-600">Frequency:</span>
                       <span className="capitalize">{sponsorship.frequency.replace('_', ' ')}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Total Paid:</span>
-                      <span className="font-semibold">{formatCurrency(sponsorship.totalPaid)}</span>
+                      <span className="text-gray-600">Start Date:</span>
+                      <span>{formatDate(sponsorship.startDate)}</span>
                     </div>
+                    {sponsorship.nextPaymentDate && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Next Payment:</span>
+                        <span>{formatDate(sponsorship.nextPaymentDate)}</span>
+                      </div>
+                    )}
+                    {sponsorship.expectedDeliveryDate && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Expected Delivery:</span>
+                        <span>{formatDate(sponsorship.expectedDeliveryDate)}</span>
+                      </div>
+                    )}
+                    {sponsorship.proofFile && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Proof:</span>
+                        <a href={`http://localhost:5000${sponsorship.proofFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View File</a>
+                      </div>
+                    )}
                   </div>
                 </div>
-                
                 <div>
                   <h3 className="font-medium text-gray-900 mb-3">Timeline</h3>
                   <div className="space-y-2">

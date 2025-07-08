@@ -191,6 +191,22 @@ export default function SponsorshipDetails() {
     )
   }
 
+  // Only calculate these after sponsorship is loaded
+  const duration = (() => {
+    const start = new Date(sponsorship.startDate)
+    const end = sponsorship.endDate ? new Date(sponsorship.endDate) : new Date()
+    const diffTime = Math.abs(end - start)
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  })()
+
+  const progress = sponsorship.type === 'money' && sponsorship.amount > 0
+    ? Math.round((sponsorship.totalPaid / sponsorship.amount) * 100)
+    : null
+
+  const remaining = sponsorship.type === 'money' && sponsorship.amount > 0
+    ? sponsorship.amount - sponsorship.totalPaid
+    : null
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto">
@@ -273,12 +289,6 @@ export default function SponsorshipDetails() {
                       <span className="text-gray-600">Start Date:</span>
                       <span>{formatDate(sponsorship.startDate)}</span>
                     </div>
-                    {sponsorship.nextPaymentDate && (
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Next Payment:</span>
-                        <span>{formatDate(sponsorship.nextPaymentDate)}</span>
-                      </div>
-                    )}
                     {sponsorship.expectedDeliveryDate && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">Expected Delivery:</span>
@@ -304,12 +314,6 @@ export default function SponsorshipDetails() {
                       <div>
                         <span className="text-gray-600">End Date:</span>
                         <div className="font-medium">{formatDate(sponsorship.endDate)}</div>
-                      </div>
-                    )}
-                    {sponsorship.nextPaymentDate && (
-                      <div>
-                        <span className="text-gray-600">Next Payment:</span>
-                        <div className="font-medium">{formatDate(sponsorship.nextPaymentDate)}</div>
                       </div>
                     )}
                   </div>
@@ -569,31 +573,20 @@ export default function SponsorshipDetails() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Duration:</span>
-                  <span className="font-medium">
-                    {(() => {
-                      const start = new Date(sponsorship.startDate)
-                      const end = sponsorship.endDate ? new Date(sponsorship.endDate) : new Date()
-                      const diffTime = Math.abs(end - start)
-                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-                      return `${diffDays} days`
-                    })()}
-                  </span>
+                  <span className="font-medium">{duration} days</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Progress:</span>
-                  <span className="font-medium">
-                    {sponsorship.totalPaid > 0 
-                      ? `${Math.round((sponsorship.totalPaid / sponsorship.amount) * 100)}%`
-                      : '0%'
-                    }
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Remaining:</span>
-                  <span className="font-medium text-green-600">
-                    {formatCurrency(sponsorship.amount - sponsorship.totalPaid)}
-                  </span>
-                </div>
+                {sponsorship.type === 'money' && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Progress:</span>
+                      <span className="font-medium">{progress}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Remaining:</span>
+                      <span className="font-medium text-green-600">{formatCurrency(remaining)}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

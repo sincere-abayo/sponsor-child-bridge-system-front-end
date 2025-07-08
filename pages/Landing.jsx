@@ -7,28 +7,28 @@ export default function Landing() {
       <Navbar />
 
       {/* Hero Section */}
-      <header
-        className="relative flex items-center justify-center h-[60vh] bg-cover bg-center"
-        style={{ backgroundImage: 'url("https://media.sciencephoto.com/image/p9100076/800wm")' }}
-      >
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4">
-            Connecting Sponsors with Those in Need
+      <header className="relative flex items-center justify-center h-[70vh] bg-gradient-to-br from-green-600 to-blue-600">
+        <div className="absolute inset-0 bg-black opacity-20"></div>
+        <div className="relative z-10 text-center text-white px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            SponsorBridge
           </h1>
-          <p className="text-lg md:text-2xl mb-6">
-            SponsorBridge helps connect generous sponsors with individuals in need of support for education, healthcare, and more.
+          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+            Connecting generous sponsors with children in need across Rwanda
           </p>
-          <div className="flex justify-center gap-4">
+          <p className="text-lg mb-8 text-green-100">
+            Empowering education, building futures, one child at a time
+          </p>
+          <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="/register"
-              className="bg-white text-blue-700 px-6 py-2 rounded font-semibold hover:bg-gray-100"
+              className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
             >
               Get Started
             </a>
             <a
               href="/login"
-              className="border border-white text-white px-6 py-2 rounded font-semibold hover:bg-white hover:text-blue-700"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors"
             >
               Sign In
             </a>
@@ -37,56 +37,55 @@ export default function Landing() {
       </header>
 
       {/* Stats Section */}
-      <section className="bg-white py-12">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div>
-            <div className="text-3xl font-bold text-blue-700">5,000+</div>
-            <div className="text-gray-600">Sponsors</div>
+      <section className="bg-white py-16">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="bg-green-50 p-6 rounded-xl">
+            <div className="text-3xl font-bold text-green-600">150+</div>
+            <div className="text-gray-600 font-medium">Sponsors</div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-blue-700">12,000+</div>
-            <div className="text-gray-600">Recipients</div>
+          <div className="bg-blue-50 p-6 rounded-xl">
+            <div className="text-3xl font-bold text-blue-600">300+</div>
+            <div className="text-gray-600 font-medium">Children Helped</div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-blue-700">$2.5M+</div>
-            <div className="text-gray-600">Funds Raised</div>
+          <div className="bg-yellow-50 p-6 rounded-xl">
+            <div className="text-3xl font-bold text-yellow-600">25M+</div>
+            <div className="text-gray-600 font-medium">RWF Raised</div>
           </div>
-          <div>
-            <div className="text-3xl font-bold text-blue-700">30+</div>
-            <div className="text-gray-600">Countries</div>
+          <div className="bg-purple-50 p-6 rounded-xl">
+            <div className="text-3xl font-bold text-purple-600">5</div>
+            <div className="text-gray-600 font-medium">Provinces</div>
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
       <section className="bg-gray-50 py-16">
-        <div className="max-w-6xl mx-auto text-center mb-12">
-          <div className="text-blue-700 font-semibold uppercase mb-2">How It Works</div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">A better way to give and receive support</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Our platform makes it easy to connect sponsors with those who need support through a simple, transparent process.
+        <div className="max-w-4xl mx-auto text-center mb-12 px-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">How It Works</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+            Simple steps to connect sponsors with children in need
           </p>
         </div>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white rounded shadow p-6">
-            <div className="text-blue-700 text-4xl mb-4">👤</div>
-            <h3 className="font-bold text-xl mb-2">Create an Account</h3>
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="text-green-600 text-5xl mb-4">👤</div>
+            <h3 className="font-bold text-xl mb-4">Create Profile</h3>
             <p className="text-gray-600">
-              Sign up as a sponsor or as someone seeking support. Complete your profile with relevant information to get started.
+              Sign up as a sponsor or sponsee. Complete your profile with basic information.
             </p>
           </div>
-          <div className="bg-white rounded shadow p-6">
-            <div className="text-blue-700 text-4xl mb-4">🤝</div>
-            <h3 className="font-bold text-xl mb-2">Connect</h3>
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="text-blue-600 text-5xl mb-4">🤝</div>
+            <h3 className="font-bold text-xl mb-4">Connect</h3>
             <p className="text-gray-600">
-              Sponsors can browse through profiles of individuals seeking support. Recipients can showcase their needs and goals.
+              Sponsors browse children's profiles. Sponsees share their needs and goals.
             </p>
           </div>
-          <div className="bg-white rounded shadow p-6">
-            <div className="text-blue-700 text-4xl mb-4">📈</div>
-            <h3 className="font-bold text-xl mb-2">Support &amp; Track</h3>
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div className="text-green-600 text-5xl mb-4">📚</div>
+            <h3 className="font-bold text-xl mb-4">Support</h3>
             <p className="text-gray-600">
-              Establish sponsorships, track progress, and communicate directly through our secure platform.
+              Establish sponsorship and track progress. Help children achieve their dreams.
             </p>
           </div>
         </div>
@@ -94,82 +93,92 @@ export default function Landing() {
 
       {/* Features Section */}
       <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto text-center mb-12">
-          <div className="text-blue-700 font-semibold uppercase mb-2">Features</div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need to make a difference</h2>
+        <div className="max-w-4xl mx-auto text-center mb-12 px-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Choose SponsorBridge?</h2>
         </div>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center px-4">
           <div className="space-y-8">
-            <div>
-              <div className="flex items-center mb-2">
-                <span className="bg-blue-700 text-white rounded p-2 mr-3">🎓</span>
-                <span className="font-semibold text-lg">Educational Support</span>
+            <div className="flex items-start">
+              <div className="bg-green-100 text-green-600 rounded-lg p-3 mr-4">
+                <span className="text-2xl">🎓</span>
               </div>
-              <div className="ml-10 text-gray-600">
-                Support students with tuition, books, supplies, and mentorship to help them achieve their educational goals.
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center mb-2">
-                <span className="bg-blue-700 text-white rounded p-2 mr-3">💬</span>
-                <span className="font-semibold text-lg">Direct Communication</span>
-              </div>
-              <div className="ml-10 text-gray-600">
-                Our platform enables secure, direct communication between sponsors and recipients to build meaningful relationships.
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Education Focus</h3>
+                <p className="text-gray-600">
+                  Supporting children's education through school fees, books, and supplies.
+                </p>
               </div>
             </div>
-            <div>
-              <div className="flex items-center mb-2">
-                <span className="bg-blue-700 text-white rounded p-2 mr-3">🔒</span>
-                <span className="font-semibold text-lg">Secure &amp; Transparent</span>
+            <div className="flex items-start">
+              <div className="bg-blue-100 text-blue-600 rounded-lg p-3 mr-4">
+                <span className="text-2xl">🏠</span>
               </div>
-              <div className="ml-10 text-gray-600">
-                All transactions and communications are secure, with full transparency on how funds are being used.
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Local Impact</h3>
+                <p className="text-gray-600">
+                  Focused on helping children across Rwanda's five provinces.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <div className="bg-yellow-100 text-yellow-600 rounded-lg p-3 mr-4">
+                <span className="text-2xl">🔒</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Safe & Secure</h3>
+                <p className="text-gray-600">
+                  Verified profiles and secure transactions for peace of mind.
+                </p>
               </div>
             </div>
           </div>
-          <div>
-            <img
-              src="https://globaladvocacyafrica.org/wp-content/uploads/2018/12/AFRICAN-CHILD-2.jpg"
-              alt="Students studying"
-              className="rounded-2xl shadow-lg w-full"
-            />
+          <div className="text-center">
+            <div className="bg-gradient-to-br from-green-100 to-blue-100 rounded-2xl p-8">
+              <div className="text-6xl mb-4">🇷🇼</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Made for Rwanda</h3>
+              <p className="text-gray-600">
+                Designed specifically for the Rwandan context and education system.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section
-        className="relative text-white py-16"
-        style={{
-          backgroundImage:
-            'url("https://images.unsplash.com/photo-1509099836639-18ba1795216d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
-        <div className="absolute inset-0 bg-blue-900 opacity-80"></div>
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to make a difference?</h2>
-          <p className="text-lg md:text-xl mb-6">
-            Join our community today and start making a positive impact in someone's life.
+      <section className="bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
+        <div className="max-w-3xl mx-auto text-center px-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Make a Difference?</h2>
+          <p className="text-lg md:text-xl mb-8 text-green-100">
+            Join our community and help children in Rwanda achieve their dreams.
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="/register"
-              className="bg-white text-blue-700 px-6 py-2 rounded font-semibold hover:bg-gray-100"
+              className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
             >
-              Get Started
+              Get Started Today
             </a>
             <a
               href="/login"
-              className="border border-white text-white px-6 py-2 rounded font-semibold hover:bg-white hover:text-blue-700"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors"
             >
               Sign In
             </a>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="max-w-4xl mx-auto text-center px-4">
+          <p className="text-gray-400">
+            © 2024 SponsorBridge - Academic Project for Rwanda
+          </p>
+          <p className="text-gray-500 text-sm mt-2">
+            Connecting sponsors with children in need across Rwanda
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

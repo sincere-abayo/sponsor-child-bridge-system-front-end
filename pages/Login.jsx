@@ -33,22 +33,10 @@ export default function Login() {
       localStorage.setItem('userRole', res.user.role)
       localStorage.setItem('userData', JSON.stringify(res.user))
       
-      // Role-based redirects (we'll implement these routes later)
+      // Redirect to profile page for now (we'll implement dashboards later)
       setTimeout(() => {
-        switch(res.user.role) {
-          case 'admin':
-            navigate('/admin/dashboard')
-            break
-          case 'sponsor':
-            navigate('/sponsor/dashboard')
-            break
-          case 'sponsee':
-            navigate('/sponsee/dashboard')
-            break
-          default:
-            navigate('/')
-        }
-      }, 2000)
+        navigate('/profile')
+      }, 1500)
     } else {
       setFormError(res.message || 'Login failed')
     }

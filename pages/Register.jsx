@@ -63,7 +63,7 @@ const handleSubmit = async (e) => {
     const res = await authAPI.register(formData)
     if (res.message === 'Registered successfully') {
       setShowSuccess(true)
-      setTimeout(() => navigate('/login'), 2000)
+      setTimeout(() => navigate('/login'), 1500)
     } else {
       setFormError(res.message || 'Registration failed')
     }

@@ -30,7 +30,25 @@ export default function Login() {
     if (res.token) {
       setShowSuccess(true)
       localStorage.setItem('token', res.token)
-      setTimeout(() => navigate('/'), 2000)
+      localStorage.setItem('userRole', res.user.role)
+      localStorage.setItem('userData', JSON.stringify(res.user))
+      
+      // Role-based redirects (we'll implement these routes later)
+      setTimeout(() => {
+        switch(res.user.role) {
+          case 'admin':
+            navigate('/admin/dashboard')
+            break
+          case 'sponsor':
+            navigate('/sponsor/dashboard')
+            break
+          case 'sponsee':
+            navigate('/sponsee/dashboard')
+            break
+          default:
+            navigate('/')
+        }
+      }, 2000)
     } else {
       setFormError(res.message || 'Login failed')
     }
@@ -53,7 +71,7 @@ export default function Login() {
           )}
           {showSuccess && (
             <div className="mb-4 text-green-600 text-sm text-center">
-              Login successful! Redirecting...
+              Login successful! Redirecting to your dashboard...
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">

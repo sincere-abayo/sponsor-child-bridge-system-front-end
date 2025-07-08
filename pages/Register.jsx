@@ -11,6 +11,7 @@ export default function Register() {
     password: '',
     confirmPassword: '',
     phone: '',
+    role: 'sponsor', // Default role
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -44,6 +45,10 @@ export default function Register() {
     }
     if (formData.password !== formData.confirmPassword) {
       setFormError('Passwords do not match')
+      return false
+    }
+    if (!formData.role) {
+      setFormError('Please select a role')
       return false
     }
     return true
@@ -180,6 +185,22 @@ const handleSubmit = async (e) => {
                 onChange={handleChange}
                 autoComplete="tel"
               />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1" htmlFor="role">
+                I am a:
+              </label>
+              <select
+                id="role"
+                name="role"
+                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={formData.role}
+                onChange={handleChange}
+                required
+              >
+                <option value="sponsor">Sponsor (I want to help children)</option>
+                <option value="sponsee">Sponsee (I need sponsorship)</option>
+              </select>
             </div>
             <button
               type="submit"

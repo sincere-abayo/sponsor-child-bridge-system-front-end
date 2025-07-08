@@ -180,11 +180,22 @@ export default function MySponsorships() {
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
-                        <span className="font-medium text-gray-600">Amount:</span>
-                        <div className="text-lg font-semibold text-green-600">
-                          {formatCurrency(sponsorship.amount)}
-                        </div>
+                        <span className="font-medium text-gray-600">Type:</span>
+                        <div className="capitalize">{sponsorship.type?.replace('_', ' ')}</div>
                       </div>
+                      {sponsorship.type === 'money' ? (
+                        <div>
+                          <span className="font-medium text-gray-600">Amount:</span>
+                          <div className="text-lg font-semibold text-green-600">
+                            {formatCurrency(sponsorship.amount)}
+                          </div>
+                        </div>
+                      ) : (
+                        <div>
+                          <span className="font-medium text-gray-600">Value/Description:</span>
+                          <div className="text-green-700 font-semibold">{sponsorship.value || 'N/A'}</div>
+                        </div>
+                      )}
                       <div>
                         <span className="font-medium text-gray-600">Frequency:</span>
                         <div className="capitalize">{sponsorship.frequency.replace('_', ' ')}</div>
@@ -199,11 +210,29 @@ export default function MySponsorships() {
                           <div>{formatDate(sponsorship.nextPaymentDate)}</div>
                         </div>
                       )}
+                      {sponsorship.expectedDeliveryDate && (
+                        <div>
+                          <span className="font-medium text-gray-600">Expected Delivery:</span>
+                          <div>{formatDate(sponsorship.expectedDeliveryDate)}</div>
+                        </div>
+                      )}
+                      {sponsorship.proofFile && (
+                        <div>
+                          <span className="font-medium text-gray-600">Proof:</span>
+                          <a href={sponsorship.proofFile} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View File</a>
+                        </div>
+                      )}
                     </div>
                     {sponsorship.description && (
                       <div className="mt-3">
                         <span className="font-medium text-gray-600">Description:</span>
                         <p className="text-gray-700 mt-1">{sponsorship.description}</p>
+                      </div>
+                    )}
+                    {sponsorship.notes && (
+                      <div className="mt-2">
+                        <span className="font-medium text-gray-600">Notes:</span>
+                        <p className="text-gray-700 mt-1">{sponsorship.notes}</p>
                       </div>
                     )}
                     {/* Sponsee/Sponsor Details */}

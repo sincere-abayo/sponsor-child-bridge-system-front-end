@@ -8,10 +8,9 @@ export default function MySponsorships() {
   const navigate = useNavigate()
   const { showNotification } = useNotification()
   const [loading, setLoading] = useState(true)
-  const [sponsorships, setSponsorships] = useState({ asSponsor: [], asSponsee: [] })
-  const [selectedTab, setSelectedTab] = useState('asSponsor')
+  const [sponsorships, setSponsorships] = useState([])
   const [statusFilter, setStatusFilter] = useState('')
-  const [userRole] = useState(localStorage.getItem('userRole'))
+  const userRole = localStorage.getItem('userRole')
 
   useEffect(() => {
     loadSponsorships()
@@ -22,7 +21,14 @@ export default function MySponsorships() {
       setLoading(true)
       const filters = statusFilter ? { status: statusFilter } : {}
       const response = await sponsorshipAPI.getMySponsorships(filters)
-      setSponsorships(response)
+      // Only show relevant sponsorships for the user's role
+      if (userRole === 'sponsor') {
+        setSponsorships(response.asSponsor?.sponsorships || [])
+      } else if (userRole === 'sponsee') {
+        setSponsorships(response.asSponsee?.sponsorships || [])
+      } else {
+        setSponsorships([])
+      }
     } catch (error) {
       console.error('Error loading sponsorships:', error)
       showNotification('Failed to load sponsorships', 'error')
@@ -84,9 +90,11 @@ export default function MySponsorships() {
     }).format(amount)
   }
 
-  const currentSponsorships = selectedTab === 'asSponsor'
-    ? sponsorships.asSponsor?.sponsorships || []
-    : sponsorships.asSponsee?.sponsorships || []
+  // Role-specific heading and empty state
+  const heading = userRole === 'sponsor' ? 'My Sponsored Children' : 'My Sponsors'
+  const emptyMsg = userRole === 'sponsor'
+    ? "You haven't created any sponsorships yet."
+    : "You don't have any sponsorships yet."
 
   if (loading) {
     return (
@@ -105,7 +113,7 @@ export default function MySponsorships() {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">My Sponsorships</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{heading}</h1>
               <p className="text-gray-600">Manage your sponsorship relationships</p>
             </div>
             {userRole === 'sponsor' && (
@@ -116,30 +124,6 @@ export default function MySponsorships() {
                 Create New Sponsorship
               </Link>
             )}
-          </div>
-
-          {/* Tabs */}
-          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setSelectedTab('asSponsor')}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                selectedTab === 'asSponsor'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              As Sponsor ({sponsorships.asSponsor?.length || 0})
-            </button>
-            <button
-              onClick={() => setSelectedTab('asSponsee')}
-              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                selectedTab === 'asSponsee'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              As Sponsee ({sponsorships.asSponsee?.length || 0})
-            </button>
           </div>
 
           {/* Filters */}
@@ -159,17 +143,12 @@ export default function MySponsorships() {
         </div>
 
         {/* Sponsorships List */}
-        {currentSponsorships?.length === 0 ? (
+        {sponsorships.length === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
             <div className="text-6xl mb-4">🤝</div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No Sponsorships Found</h3>
-            <p className="text-gray-600 mb-4">
-              {selectedTab === 'asSponsor' 
-                ? "You haven't created any sponsorships yet."
-                : "You don't have any sponsorships yet."
-              }
-            </p>
-            {selectedTab === 'asSponsor' && userRole === 'sponsor' && (
+            <p className="text-gray-600 mb-4">{emptyMsg}</p>
+            {userRole === 'sponsor' && (
               <Link
                 to="/create-sponsorship"
                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
@@ -180,7 +159,7 @@ export default function MySponsorships() {
           </div>
         ) : (
           <div className="grid gap-6">
-            {currentSponsorships?.map((sponsorship) => (
+            {sponsorships.map((sponsorship) => (
               <div key={sponsorship.id} className="bg-white rounded-lg shadow-lg p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
@@ -193,14 +172,12 @@ export default function MySponsorships() {
                         Created {formatDate(sponsorship.createdAt)}
                       </span>
                     </div>
-                    
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {selectedTab === 'asSponsor' 
+                      {userRole === 'sponsor'
                         ? `Sponsoring ${sponsorship.sponsee?.name}`
                         : `Sponsored by ${sponsorship.sponsor?.name}`
                       }
                     </h3>
-
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <span className="font-medium text-gray-600">Amount:</span>
@@ -223,20 +200,18 @@ export default function MySponsorships() {
                         </div>
                       )}
                     </div>
-
                     {sponsorship.description && (
                       <div className="mt-3">
                         <span className="font-medium text-gray-600">Description:</span>
                         <p className="text-gray-700 mt-1">{sponsorship.description}</p>
                       </div>
                     )}
-
                     {/* Sponsee/Sponsor Details */}
                     <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                       <h4 className="font-medium text-gray-900 mb-2">
-                        {selectedTab === 'asSponsor' ? 'Child Details:' : 'Sponsor Details:'}
+                        {userRole === 'sponsor' ? 'Child Details:' : 'Sponsor Details:'}
                       </h4>
-                      {selectedTab === 'asSponsor' ? (
+                      {userRole === 'sponsor' ? (
                         <div className="grid grid-cols-2 gap-2 text-sm">
                           <div><span className="font-medium">Name:</span> {sponsorship.sponsee?.name}</div>
                           <div><span className="font-medium">Age:</span> {sponsorship.sponsee?.sponseeProfile?.age} years</div>
@@ -252,7 +227,6 @@ export default function MySponsorships() {
                       )}
                     </div>
                   </div>
-
                   {/* Action Buttons */}
                   <div className="flex flex-col space-y-2 ml-4">
                     <Link
@@ -261,8 +235,7 @@ export default function MySponsorships() {
                     >
                       View Details
                     </Link>
-                    
-                    {selectedTab === 'asSponsor' && sponsorship.status === 'pending' && (
+                    {userRole === 'sponsor' && sponsorship.status === 'pending' && (
                       <div className="flex flex-col space-y-1">
                         <button
                           onClick={() => handleStatusUpdate(sponsorship.id, 'active')}
@@ -278,8 +251,7 @@ export default function MySponsorships() {
                         </button>
                       </div>
                     )}
-                    
-                    {selectedTab === 'asSponsor' && sponsorship.status === 'active' && (
+                    {userRole === 'sponsor' && sponsorship.status === 'active' && (
                       <div className="flex flex-col space-y-1">
                         <button
                           onClick={() => handleStatusUpdate(sponsorship.id, 'completed')}
@@ -295,8 +267,7 @@ export default function MySponsorships() {
                         </button>
                       </div>
                     )}
-
-                    {selectedTab === 'asSponsor' && sponsorship.status === 'cancelled' && (
+                    {userRole === 'sponsor' && sponsorship.status === 'cancelled' && (
                       <button
                         onClick={() => handleStatusUpdate(sponsorship.id, 'active')}
                         className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"

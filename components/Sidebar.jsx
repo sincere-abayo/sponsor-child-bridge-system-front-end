@@ -31,12 +31,6 @@ export default function Sidebar() {
       description: 'Overview of your sponsorships'
     },
     {
-      name: 'Browse Children',
-      path: '/browse-sponsees',
-      icon: '👨‍🎓',
-      description: 'Find children to sponsor'
-    },
-    {
       name: 'Create Sponsorship',
       path: '/create-sponsorship',
       icon: '➕',
@@ -55,12 +49,6 @@ export default function Sidebar() {
       description: 'Communicate with sponsees'
     },
     {
-      name: 'Donations',
-      path: '/donations',
-      icon: '💰',
-      description: 'Track your donations'
-    },
-    {
       name: 'Profile',
       path: '/profile',
       icon: '👤',
@@ -74,12 +62,6 @@ export default function Sidebar() {
       path: '/dashboard',
       icon: '📊',
       description: 'Overview of your sponsorship'
-    },
-    {
-      name: 'Browse Sponsors',
-      path: '/browse-sponsors',
-      icon: '🤝',
-      description: 'Find potential sponsors'
     },
     {
       name: 'My Sponsorships',

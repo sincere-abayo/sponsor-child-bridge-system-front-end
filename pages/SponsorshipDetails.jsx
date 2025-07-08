@@ -121,12 +121,31 @@ export default function SponsorshipDetails() {
               <h1 className="text-2xl font-bold text-gray-900">Sponsorship Details</h1>
               <p className="text-gray-600">Comprehensive view of your sponsorship</p>
             </div>
-            <button
-              onClick={() => navigate('/my-sponsorships')}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              Back to Sponsorships
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => navigate('/my-sponsorships')}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Back to Sponsorships
+              </button>
+              {sponsorship.status === 'pending' && isSponsor && (
+                <>
+                  <button
+                    onClick={() => navigate(`/sponsorship/${sponsorship.id}/edit`)}
+                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <a
+                    href={`/sponsorship/${sponsorship.id}/edit`}
+                    className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 border border-yellow-400 transition-colors ml-2"
+                    style={{textDecoration: 'none'}}
+                  >
+                    Edit (Link)
+                  </a>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Status Badge */}

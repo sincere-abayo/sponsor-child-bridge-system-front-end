@@ -7,6 +7,7 @@ import Profile from '../pages/Profile'
 import CreateSponsorship from '../pages/CreateSponsorship'
 import MySponsorships from '../pages/MySponsorships'
 import SponsorshipDetails from '../pages/SponsorshipDetails'
+import EditSponsorship from '../pages/EditSponsorship'
 import { NotificationProvider } from '../components/NotificationContext'
 import Layout from '../components/Layout'
 
@@ -107,6 +108,7 @@ function App() {
           <Route path="/my-sponsorship" element={<MySponsorship />} />
           <Route path="/create-sponsorship" element={<CreateSponsorship />} />
           <Route path="/sponsorship/:id" element={<SponsorshipDetails />} />
+          <Route path="/sponsorship/:id/edit" element={<EditSponsorship />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/donations" element={<Donations />} />
           <Route path="/progress" element={<Progress />} />

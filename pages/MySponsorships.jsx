@@ -304,6 +304,14 @@ export default function MySponsorships() {
                         Activate
                       </button>
                     )}
+                    {userRole === 'sponsor' && sponsorship.status === 'pending' && (
+                      <Link
+                        to={`/sponsorship/${sponsorship.id}/edit`}
+                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm"
+                      >
+                        Edit
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>

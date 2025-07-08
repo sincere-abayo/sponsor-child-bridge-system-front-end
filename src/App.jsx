@@ -10,6 +10,7 @@ import SponsorshipDetails from '../pages/SponsorshipDetails'
 import EditSponsorship from '../pages/EditSponsorship'
 import { NotificationProvider } from '../components/NotificationContext'
 import Layout from '../components/Layout'
+import Messages from '../pages/Messages'
 
 // Placeholder components for sidebar navigation
 const Dashboard = () => (
@@ -51,17 +52,6 @@ const MySponsorship = () => (
       <div className="bg-white rounded-xl shadow-sm border p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">My Sponsorship</h1>
         <p className="text-gray-600">View your current sponsorship details. This feature is coming soon.</p>
-      </div>
-    </div>
-  </Layout>
-)
-
-const Messages = () => (
-  <Layout>
-    <div className="max-w-6xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Messages</h1>
-        <p className="text-gray-600">Communicate with your connections. This feature is coming soon.</p>
       </div>
     </div>
   </Layout>

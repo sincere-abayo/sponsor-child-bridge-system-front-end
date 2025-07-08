@@ -4,6 +4,9 @@ import Landing from '../pages/Landing'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
 import Profile from '../pages/Profile'
+import CreateSponsorship from '../pages/CreateSponsorship'
+import MySponsorships from '../pages/MySponsorships'
+import SponsorshipDetails from '../pages/SponsorshipDetails'
 import { NotificationProvider } from '../components/NotificationContext'
 import Layout from '../components/Layout'
 
@@ -36,17 +39,6 @@ const BrowseSponsors = () => (
       <div className="bg-white rounded-xl shadow-sm border p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Browse Sponsors</h1>
         <p className="text-gray-600">Find potential sponsors. This feature is coming soon.</p>
-      </div>
-    </div>
-  </Layout>
-)
-
-const MySponsorships = () => (
-  <Layout>
-    <div className="max-w-6xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">My Sponsorships</h1>
-        <p className="text-gray-600">Manage your current sponsorships. This feature is coming soon.</p>
       </div>
     </div>
   </Layout>
@@ -113,6 +105,8 @@ function App() {
           <Route path="/browse-sponsors" element={<BrowseSponsors />} />
           <Route path="/my-sponsorships" element={<MySponsorships />} />
           <Route path="/my-sponsorship" element={<MySponsorship />} />
+          <Route path="/create-sponsorship" element={<CreateSponsorship />} />
+          <Route path="/sponsorship/:id" element={<SponsorshipDetails />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/donations" element={<Donations />} />
           <Route path="/progress" element={<Progress />} />

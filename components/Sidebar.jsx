@@ -22,6 +22,12 @@ export default function Sidebar() {
       description: 'Find children to sponsor'
     },
     {
+      name: 'Create Sponsorship',
+      path: '/create-sponsorship',
+      icon: '➕',
+      description: 'Start a new sponsorship'
+    },
+    {
       name: 'My Sponsorships',
       path: '/my-sponsorships',
       icon: '🤝',
@@ -61,10 +67,10 @@ export default function Sidebar() {
       description: 'Find potential sponsors'
     },
     {
-      name: 'My Sponsorship',
-      path: '/my-sponsorship',
+      name: 'My Sponsorships',
+      path: '/my-sponsorships',
       icon: '📚',
-      description: 'View your current sponsorship'
+      description: 'View your current sponsorships'
     },
     {
       name: 'Messages',

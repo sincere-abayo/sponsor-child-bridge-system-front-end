@@ -61,3 +61,68 @@ export const profileAPI = {
     return fetch(`${API_URL}/profiles/sponsees?${params}`).then(res => res.json())
   },
 }
+
+// Sponsorship API functions
+export const sponsorshipAPI = {
+  createSponsorship: (data) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/sponsorships`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json())
+  },
+
+  getMySponsorships: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/sponsorships?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getSponsorship: (id) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/sponsorships/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  updateSponsorshipStatus: (id, data) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/sponsorships/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json())
+  },
+
+  getSponsorshipHistory: (period = 'all') => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/sponsorships/history?period=${period}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getAvailableSponsees: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/sponsorships/available-sponsees?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+}

@@ -1,0 +1,237 @@
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { sponsorshipAPI } from '../services/api'
+import { useNotification } from '../components/NotificationContext'
+import Layout from '../components/Layout'
+
+export default function CreateSponsorship() {
+  const navigate = useNavigate()
+  const { showNotification } = useNotification()
+  const [loading, setLoading] = useState(false)
+  const [sponsees, setSponsees] = useState([])
+  const [selectedSponsee, setSelectedSponsee] = useState('')
+  const [form, setForm] = useState({
+    amount: '',
+    description: '',
+    frequency: 'monthly',
+    notes: ''
+  })
+
+  useEffect(() => {
+    loadAvailableSponsees()
+  }, [])
+
+  const loadAvailableSponsees = async () => {
+    try {
+      const response = await sponsorshipAPI.getAvailableSponsees()
+      if (response.sponsees) {
+        setSponsees(response.sponsees)
+      }
+    } catch (error) {
+      console.error('Error loading sponsees:', error)
+      showNotification('Failed to load available sponsees', 'error')
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setForm(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    
+    if (!selectedSponsee) {
+      showNotification('Please select a sponsee', 'error')
+      return
+    }
+
+    if (!form.amount || form.amount <= 0) {
+      showNotification('Please enter a valid amount', 'error')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await sponsorshipAPI.createSponsorship({
+        sponseeId: selectedSponsee,
+        ...form
+      })
+
+      if (response.message) {
+        showNotification('Sponsorship created successfully!', 'success')
+        navigate('/my-sponsorships')
+      } else {
+        showNotification(response.message || 'Failed to create sponsorship', 'error')
+      }
+    } catch (error) {
+      console.error('Error creating sponsorship:', error)
+      showNotification('Failed to create sponsorship', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800'
+      case 'pending': return 'bg-yellow-100 text-yellow-800'
+      case 'completed': return 'bg-blue-100 text-blue-800'
+      case 'cancelled': return 'bg-red-100 text-red-800'
+      default: return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  return (
+    <Layout>
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Create New Sponsorship</h1>
+            <p className="text-gray-600">Select a child to sponsor and set up your sponsorship details</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Sponsee Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select Child to Sponsor *
+              </label>
+              <select
+                value={selectedSponsee}
+                onChange={(e) => setSelectedSponsee(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              >
+                <option value="">Choose a child...</option>
+                {sponsees.map((sponsee) => (
+                  <option key={sponsee.id} value={sponsee.user.id}>
+                    {sponsee.user.name} - {sponsee.age} years old, {sponsee.gender} - {sponsee.location}
+                  </option>
+                ))}
+              </select>
+              {sponsees.length === 0 && (
+                <p className="text-sm text-gray-500 mt-1">No available sponsees found</p>
+              )}
+            </div>
+
+            {/* Selected Sponsee Details */}
+            {selectedSponsee && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-medium text-gray-900 mb-2">Selected Child Details</h3>
+                {(() => {
+                  const sponsee = sponsees.find(s => s.user.id == selectedSponsee)
+                  if (!sponsee) return null
+                  return (
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium">Name:</span> {sponsee.user.name}
+                      </div>
+                      <div>
+                        <span className="font-medium">Age:</span> {sponsee.age} years
+                      </div>
+                      <div>
+                        <span className="font-medium">Gender:</span> {sponsee.gender}
+                      </div>
+                      <div>
+                        <span className="font-medium">Location:</span> {sponsee.location}
+                      </div>
+                      <div>
+                        <span className="font-medium">School:</span> {sponsee.schoolName || 'Not specified'}
+                      </div>
+                      <div>
+                        <span className="font-medium">Grade:</span> {sponsee.grade || 'Not specified'}
+                      </div>
+                    </div>
+                  )
+                })()}
+              </div>
+            )}
+
+            {/* Sponsorship Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Amount (RWF) *
+                </label>
+                <input
+                  type="number"
+                  name="amount"
+                  value={form.amount}
+                  onChange={handleChange}
+                  placeholder="50000"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  required
+                  min="1000"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Frequency *
+                </label>
+                <select
+                  name="frequency"
+                  value={form.frequency}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="yearly">Yearly</option>
+                  <option value="one_time">One Time</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                placeholder="Describe what this sponsorship will cover (e.g., school fees, books, uniforms)"
+                rows="3"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Additional Notes
+              </label>
+              <textarea
+                name="notes"
+                value={form.notes}
+                onChange={handleChange}
+                placeholder="Any additional notes or special requirements"
+                rows="2"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-4 pt-6 border-t">
+              <button
+                type="button"
+                onClick={() => navigate('/my-sponsorships')}
+                className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || !selectedSponsee}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? 'Creating...' : 'Create Sponsorship'}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Layout>
+  )
+} 

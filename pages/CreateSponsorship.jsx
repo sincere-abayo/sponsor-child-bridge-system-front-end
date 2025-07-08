@@ -14,7 +14,11 @@ export default function CreateSponsorship() {
     amount: '',
     description: '',
     frequency: 'monthly',
-    notes: ''
+    notes: '',
+    type: 'money',
+    value: '',
+    expectedDeliveryDate: '',
+    proofFile: null
   })
 
   useEffect(() => {
@@ -34,31 +38,33 @@ export default function CreateSponsorship() {
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+    const { name, value, type: inputType, files } = e.target
+    if (inputType === 'file') {
+      setForm(prev => ({ ...prev, [name]: files[0] }))
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }))
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
     if (!selectedSponsee) {
       showNotification('Please select a sponsee', 'error')
       return
     }
-
-    if (!form.amount || form.amount <= 0) {
+    if (form.type === 'money' && (!form.amount || form.amount <= 0)) {
       showNotification('Please enter a valid amount', 'error')
       return
     }
-
     setLoading(true)
     try {
-      const response = await sponsorshipAPI.createSponsorship({
+      const data = {
         sponseeId: selectedSponsee,
         ...form
-      })
-
-      if (response.message) {
+      }
+      if (!form.proofFile) delete data.proofFile
+      const response = await sponsorshipAPI.createSponsorship(data)
+      if (response.sponsorship) {
         showNotification('Sponsorship created successfully!', 'success')
         navigate('/my-sponsorships')
       } else {
@@ -148,8 +154,53 @@ export default function CreateSponsorship() {
               </div>
             )}
 
-            {/* Sponsorship Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Sponsorship Type */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Sponsorship Type *
+              </label>
+              <select
+                name="type"
+                value={form.type}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                required
+              >
+                <option value="money">Money</option>
+                <option value="school_supplies">School Supplies</option>
+                <option value="food">Food</option>
+                <option value="clothing">Clothing</option>
+                <option value="medical">Medical</option>
+                <option value="transport">Transport</option>
+                <option value="technology">Technology</option>
+                <option value="books">Books</option>
+                <option value="uniforms">Uniforms</option>
+                <option value="meals">Meals</option>
+                <option value="tuition">Tuition</option>
+                <option value="accommodation">Accommodation</option>
+                <option value="hygiene">Hygiene</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            {/* Value (for non-monetary types) */}
+            {form.type !== 'money' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Value/Description *
+                </label>
+                <input
+                  type="text"
+                  name="value"
+                  value={form.value}
+                  onChange={handleChange}
+                  placeholder="e.g., 10 notebooks, 5kg rice"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  required={form.type !== 'money'}
+                />
+              </div>
+            )}
+            {/* Amount (for money type) */}
+            {form.type === 'money' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Amount (RWF) *
@@ -161,27 +212,54 @@ export default function CreateSponsorship() {
                   onChange={handleChange}
                   placeholder="50000"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  required
+                  required={form.type === 'money'}
                   min="1000"
                 />
               </div>
+            )}
+            {/* Expected Delivery Date */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Expected Delivery Date
+              </label>
+              <input
+                type="date"
+                name="expectedDeliveryDate"
+                value={form.expectedDeliveryDate}
+                onChange={handleChange}
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+            {/* Proof File Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Upload Proof (optional)
+              </label>
+              <input
+                type="file"
+                name="proofFile"
+                accept="image/*,application/pdf"
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Frequency *
-                </label>
-                <select
-                  name="frequency"
-                  value={form.frequency}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                >
-                  <option value="monthly">Monthly</option>
-                  <option value="quarterly">Quarterly</option>
-                  <option value="yearly">Yearly</option>
-                  <option value="one_time">One Time</option>
-                </select>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Frequency *
+              </label>
+              <select
+                name="frequency"
+                value={form.frequency}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              >
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+                <option value="one_time">One Time</option>
+              </select>
             </div>
 
             <div>

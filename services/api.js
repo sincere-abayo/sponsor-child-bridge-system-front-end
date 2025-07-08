@@ -66,13 +66,18 @@ export const profileAPI = {
 export const sponsorshipAPI = {
   createSponsorship: (data) => {
     const token = localStorage.getItem('token')
+    const formData = new FormData()
+    for (const key in data) {
+      if (data[key] !== undefined && data[key] !== null) {
+        formData.append(key, data[key])
+      }
+    }
     return fetch(`${API_URL}/sponsorships`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(data),
+      body: formData,
     }).then(res => res.json())
   },
 

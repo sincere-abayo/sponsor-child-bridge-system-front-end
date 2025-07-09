@@ -49,6 +49,12 @@ export default function Sidebar() {
       description: 'Communicate with sponsees'
     },
     {
+      name: 'Reports',
+      path: '/dashboard/reports',
+      icon: '📋',
+      description: 'View your sponsorship reports'
+    },
+    {
       name: 'Profile',
       path: '/profile',
       icon: '👤',
@@ -76,10 +82,10 @@ export default function Sidebar() {
       description: 'Communicate with sponsors'
     },
     {
-      name: 'Progress',
-      path: '/progress',
-      icon: '📈',
-      description: 'Track your educational progress'
+      name: 'Reports',
+      path: '/dashboard/reports',
+      icon: '📋',
+      description: 'View your sponsorship reports'
     },
     {
       name: 'Profile',
@@ -114,12 +120,7 @@ export default function Sidebar() {
       icon: '📋',
       description: 'View system reports'
     },
-    {
-      name: 'Settings',
-      path: '/admin/settings',
-      icon: '⚙️',
-      description: 'System settings'
-    },
+ 
     {
       name: 'Assignments',
       path: '/admin/assignments',

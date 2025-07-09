@@ -17,10 +17,13 @@ import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminUsers from '../pages/admin/AdminUsers'
 import AdminSponsorships from '../pages/admin/AdminSponsorships'
 import AdminAssignments from '../pages/admin/AdminAssignments'
+import AdminReports from '../pages/admin/AdminReports'
 
 // Placeholder components for sidebar navigation
 import SponsorDashboard from '../pages/SponsorDashboard'
 import SponseeDashboard from '../pages/SponseeDashboard'
+import SponsorReports from '../pages/SponsorReports'
+import SponseeReports from '../pages/SponseeReports'
 
 const Dashboard = () => {
   const userRole = localStorage.getItem('userRole')
@@ -93,6 +96,13 @@ const Progress = () => (
   </Layout>
 )
 
+const Reports = () => {
+  const userRole = localStorage.getItem('userRole')
+  if (userRole === 'sponsor') return <SponsorReports />
+  if (userRole === 'sponsee') return <SponseeReports />
+  return null
+}
+
 function App() {
   return (
     <NotificationProvider>
@@ -106,6 +116,7 @@ function App() {
           {/* Protected routes with Layout */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/reports" element={<Reports />} />
           <Route path="/browse-sponsees" element={<BrowseSponsees />} />
           <Route path="/browse-sponsors" element={<BrowseSponsors />} />
           <Route path="/my-sponsorships" element={<MySponsorships />} />
@@ -122,6 +133,7 @@ function App() {
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/sponsorships" element={<AdminSponsorships />} />
           <Route path="/admin/assignments" element={<AdminAssignments />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
         </Routes>
       </Router>
     </NotificationProvider>

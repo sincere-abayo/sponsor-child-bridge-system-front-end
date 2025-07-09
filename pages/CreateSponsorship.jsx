@@ -108,6 +108,7 @@ export default function CreateSponsorship() {
                 onChange={(e) => setSelectedSponsee(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 required
+                disabled={sponsees.length === 0}
               >
                 <option value="">Choose a child...</option>
                 {sponsees.map((sponsee) => (
@@ -117,7 +118,7 @@ export default function CreateSponsorship() {
                 ))}
               </select>
               {sponsees.length === 0 && (
-                <p className="text-sm text-gray-500 mt-1">No available sponsees found</p>
+                <p className="text-sm text-red-500 mt-1">You have no assigned sponsees. Please contact the admin to be assigned before you can sponsor a child.</p>
               )}
             </div>
 
@@ -301,8 +302,8 @@ export default function CreateSponsorship() {
               </button>
               <button
                 type="submit"
-                disabled={loading || !selectedSponsee}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold w-full"
+                disabled={loading || sponsees.length === 0}
               >
                 {loading ? 'Creating...' : 'Create Sponsorship'}
               </button>

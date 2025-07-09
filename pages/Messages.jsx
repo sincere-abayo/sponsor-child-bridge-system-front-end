@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Layout from '../components/Layout'
 import { useNotification } from '../components/NotificationContext'
+import { profileAPI } from '../services/api'
 
 const API_BASE = '/api/messages'
 const USERS_API = '/api/profiles/all' // Adjust if needed
@@ -27,13 +28,21 @@ export default function Messages() {
   const token = localStorage.getItem('token')
   const userId = parseInt(localStorage.getItem('userId'))
 
-  // Fetch all users for compose dropdown
+  // Fetch assigned users for compose dropdown
   useEffect(() => {
     if (!showCompose) return
-    fetch(USERS_API, { headers: { Authorization: `Bearer ${token}` } })
-      .then(r => r.json())
-      .then(users => setAllUsers(users.filter(u => u.id !== userId)))
-      .catch(() => showNotification('Failed to load users', 'error'))
+    const userRole = localStorage.getItem('userRole')
+    if (userRole === 'sponsor') {
+      profileAPI.getSponseeProfiles().then(res => {
+        setAllUsers((res.profiles || []).map(p => p.user))
+      }).catch(() => showNotification('Failed to load assigned sponsees', 'error'))
+    } else if (userRole === 'sponsee') {
+      profileAPI.getSponsorProfiles().then(res => {
+        setAllUsers((res.profiles || []).map(p => p.user))
+      }).catch(() => showNotification('Failed to load assigned sponsors', 'error'))
+    } else {
+      setAllUsers([])
+    }
   }, [showCompose])
 
   useEffect(() => {
@@ -190,12 +199,16 @@ export default function Messages() {
                   value={composeUser}
                   onChange={e => setComposeUser(e.target.value)}
                   required
+                  disabled={allUsers.length === 0}
                 >
                   <option value="">Select recipient...</option>
                   {allUsers.map(u => (
                     <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
                   ))}
                 </select>
+                {allUsers.length === 0 && (
+                  <div className="text-sm text-red-500">You have no assigned users to message. Please contact the admin if you believe this is an error.</div>
+                )}
                 <textarea
                   className="w-full px-4 py-2 border rounded-lg"
                   rows={3}
@@ -203,12 +216,12 @@ export default function Messages() {
                   value={composeText}
                   onChange={e => setComposeText(e.target.value)}
                   required
-                  disabled={composeSending}
+                  disabled={composeSending || allUsers.length === 0}
                 />
                 <button
                   type="submit"
                   className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-semibold w-full"
-                  disabled={composeSending || !composeUser || !composeText.trim()}
+                  disabled={composeSending || !composeUser || !composeText.trim() || allUsers.length === 0}
                 >Send</button>
               </form>
             </div>

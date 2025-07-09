@@ -12,6 +12,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [activeTab, setActiveTab] = useState('profile')
+  const [assignedUsers, setAssignedUsers] = useState([])
 
   // Simplified form states
   const [sponsorForm, setSponsorForm] = useState({
@@ -37,6 +38,19 @@ export default function Profile() {
   useEffect(() => {
     loadProfile()
   }, [])
+
+  useEffect(() => {
+    if (!user) return
+    if (user.role === 'sponsor') {
+      profileAPI.getSponseeProfiles().then(res => {
+        setAssignedUsers((res.profiles || []).map(p => p.user))
+      })
+    } else if (user.role === 'sponsee') {
+      profileAPI.getSponsorProfiles().then(res => {
+        setAssignedUsers((res.profiles || []).map(p => p.user))
+      })
+    }
+  }, [user])
 
   const loadProfile = async () => {
     try {
@@ -177,6 +191,36 @@ export default function Profile() {
             </div>
           </div>
         </div>
+
+        {/* Assigned Users Section */}
+        {user.role === 'sponsor' && (
+          <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+            <h2 className="text-xl font-bold mb-2">My Assigned Sponsees</h2>
+            {assignedUsers.length === 0 ? (
+              <div className="text-gray-500">No assigned sponsees.</div>
+            ) : (
+              <ul className="list-disc pl-6">
+                {assignedUsers.map(u => (
+                  <li key={u.id} className="mb-1">{u.name} ({u.email})</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+        {user.role === 'sponsee' && (
+          <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+            <h2 className="text-xl font-bold mb-2">My Assigned Sponsors</h2>
+            {assignedUsers.length === 0 ? (
+              <div className="text-gray-500">No assigned sponsors.</div>
+            ) : (
+              <ul className="list-disc pl-6">
+                {assignedUsers.map(u => (
+                  <li key={u.id} className="mb-1">{u.name} ({u.email})</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="bg-white rounded-xl shadow-sm border mb-6">

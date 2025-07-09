@@ -28,6 +28,7 @@ export default function CreateSponsorship() {
   const loadAvailableSponsees = async () => {
     try {
       const response = await sponsorshipAPI.getAvailableSponsees()
+      console.log('response', response)
       if (response.sponsees) {
         setSponsees(response.sponsees)
       }

@@ -157,7 +157,6 @@ export default function Header() {
                       tabIndex={0}
                       role="button"
                       onKeyDown={e => { if (e.key === 'Enter') handleNotificationClick(notif) }}
-                      style={notif.data && notif.data.link ? { textDecoration: 'underline', color: '#2563eb' } : {}}
                     >
                       <div className="flex-1">
                         <div className="font-medium text-gray-800 text-sm">{notif.message}</div>

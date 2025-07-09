@@ -14,7 +14,6 @@ export default function AdminUsers() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
     phone: '',
     role: 'sponsor'
   })
@@ -52,13 +51,13 @@ export default function AdminUsers() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, password: 'password123' })
       })
       
       if (response.ok) {
         showNotification('User created successfully', 'success')
         setShowCreateModal(false)
-        setFormData({ name: '', email: '', password: '', phone: '', role: 'sponsor' })
+        setFormData({ name: '', email: '', phone: '', role: 'sponsor' })
         loadUsers()
       } else {
         const error = await response.json()
@@ -285,14 +284,6 @@ export default function AdminUsers() {
                     required
                   />
                   <input
-                    type="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({...formData, password: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    required
-                  />
-                  <input
                     type="text"
                     placeholder="Phone (optional)"
                     value={formData.phone}
@@ -309,6 +300,9 @@ export default function AdminUsers() {
                     <option value="sponsee">Sponsee</option>
                     <option value="admin">Admin</option>
                   </select>
+                  <div className="text-xs text-gray-500 mt-2">
+                    Default password will be <span className="font-mono bg-gray-100 px-2 py-1 rounded">password123</span>
+                  </div>
                 </div>
                 <div className="flex justify-end space-x-3 mt-6">
                   <button

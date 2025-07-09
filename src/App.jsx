@@ -19,16 +19,24 @@ import AdminSponsorships from '../pages/admin/AdminSponsorships'
 import AdminAssignments from '../pages/admin/AdminAssignments'
 
 // Placeholder components for sidebar navigation
-const Dashboard = () => (
-  <Layout>
-    <div className="max-w-6xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Dashboard</h1>
-        <p className="text-gray-600">Welcome to your dashboard! This page is coming soon.</p>
+import SponsorDashboard from '../pages/SponsorDashboard'
+import SponseeDashboard from '../pages/SponseeDashboard'
+
+const Dashboard = () => {
+  const userRole = localStorage.getItem('userRole')
+  if (userRole === 'sponsor') return <SponsorDashboard />
+  if (userRole === 'sponsee') return <SponseeDashboard />
+  return (
+    <Layout>
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Dashboard</h1>
+          <p className="text-gray-600">Welcome to your dashboard! This page is coming soon.</p>
+        </div>
       </div>
-    </div>
-  </Layout>
-)
+    </Layout>
+  )
+}
 
 const BrowseSponsees = () => (
   <Layout>

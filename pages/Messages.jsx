@@ -33,13 +33,19 @@ export default function Messages() {
     if (!showCompose) return
     const userRole = localStorage.getItem('userRole')
     if (userRole === 'sponsor') {
-      profileAPI.getSponseeProfiles().then(res => {
-        setAllUsers((res.profiles || []).map(p => p.user))
-      }).catch(() => showNotification('Failed to load assigned sponsees', 'error'))
+      // Use the same logic as CreateSponsorship
+      import('../services/api').then(({ sponsorshipAPI }) => {
+        sponsorshipAPI.getAvailableSponsees().then(res => {
+          setAllUsers((res.sponsees || []).map(p => p.user))
+        }).catch(() => showNotification('Failed to load assigned sponsees', 'error'))
+      })
     } else if (userRole === 'sponsee') {
-      profileAPI.getSponsorProfiles().then(res => {
-        setAllUsers((res.profiles || []).map(p => p.user))
-      }).catch(() => showNotification('Failed to load assigned sponsors', 'error'))
+      // Fallback to current logic for sponsees
+      import('../services/api').then(({ sponsorshipAPI }) => {
+        sponsorshipAPI.getAvailableSponsors().then(res => {
+          setAllUsers((res.sponsors || []).map(p => p.user))
+        }).catch(() => showNotification('Failed to load assigned sponsors', 'error'))
+      })
     } else {
       setAllUsers([])
     }

@@ -52,13 +52,23 @@ export const profileAPI = {
   },
 
   getSponsorProfiles: (filters = {}) => {
+    const token = localStorage.getItem('token')
     const params = new URLSearchParams(filters)
-    return fetch(`${API_URL}/profiles/sponsors?${params}`).then(res => res.json())
+    return fetch(`${API_URL}/profiles/sponsors?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
   },
 
   getSponseeProfiles: (filters = {}) => {
+    const token = localStorage.getItem('token')
     const params = new URLSearchParams(filters)
-    return fetch(`${API_URL}/profiles/sponsees?${params}`).then(res => res.json())
+    return fetch(`${API_URL}/profiles/sponsees?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
   },
 }
 
@@ -125,6 +135,16 @@ export const sponsorshipAPI = {
     const token = localStorage.getItem('token')
     const params = new URLSearchParams(filters)
     return fetch(`${API_URL}/sponsorships/available-sponsees?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getAvailableSponsors: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/sponsorships/available-sponsors?${params}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

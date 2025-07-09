@@ -23,6 +23,10 @@ export default function Messages() {
   const [composeUser, setComposeUser] = useState('')
   const [composeText, setComposeText] = useState('')
   const [composeSending, setComposeSending] = useState(false)
+  const [composeLanguage, setComposeLanguage] = useState('en')
+  const [messageLanguage, setMessageLanguage] = useState('en')
+  const [translation, setTranslation] = useState({}) // { [msgId]: { text, loading, error } }
+  const [targetLang, setTargetLang] = useState('en')
 
   // Get token for auth
   const token = localStorage.getItem('token')
@@ -85,6 +89,11 @@ export default function Messages() {
       .then(r => r.json()).then(setConversation).catch(() => showNotification('Failed to load conversation', 'error'))
   }, [selected, refresh])
 
+  // When opening compose modal, reset composeLanguage to 'en'
+  useEffect(() => {
+    if (showCompose) setComposeLanguage('en')
+  }, [showCompose])
+
   const handleSelect = (msg) => {
     // Select the other user in the conversation
     setSelected(msg.sender?.id === userId ? msg.receiver : msg.sender)
@@ -93,6 +102,7 @@ export default function Messages() {
   const handleSend = async (e) => {
     e.preventDefault()
     if (!messageText.trim() || !selected) return
+    console.log('Sending message with language:', messageLanguage)
     setSending(true)
     try {
       const res = await fetch(API_BASE, {
@@ -101,7 +111,7 @@ export default function Messages() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ receiverId: selected.id, content: messageText })
+        body: JSON.stringify({ receiverId: selected.id, content: messageText, language: messageLanguage })
       })
       if (res.ok) {
         setMessageText('')
@@ -120,14 +130,17 @@ export default function Messages() {
     e.preventDefault()
     if (!composeUser || !composeText.trim()) return
     setComposeSending(true)
+    console.log('Sending message with language:', composeLanguage)
+
     try {
+      console.log('Sending message with language:', composeLanguage)
       const res = await fetch(API_BASE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ receiverId: composeUser, content: composeText })
+        body: JSON.stringify({ receiverId: composeUser, content: composeText, language: composeLanguage })
       })
       if (res.ok) {
         setShowCompose(false)
@@ -140,6 +153,26 @@ export default function Messages() {
       }
     } finally {
       setComposeSending(false)
+    }
+  }
+
+  // Helper to translate a message
+  const handleTranslate = async (msg) => {
+    setTranslation(prev => ({ ...prev, [msg.id]: { loading: true } }))
+    try {
+      const res = await fetch('https://kinyarwanda-translator-api.onrender.com/api/translate', {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: msg.content, source: msg.language || 'en', target: targetLang })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setTranslation(prev => ({ ...prev, [msg.id]: { text: data.translatedText, loading: false } }))
+      } else {
+        setTranslation(prev => ({ ...prev, [msg.id]: { error: data.error || 'Translation failed', loading: false } }))
+      }
+    } catch (err) {
+      setTranslation(prev => ({ ...prev, [msg.id]: { error: err.message || 'Translation failed', loading: false } }))
     }
   }
 
@@ -212,6 +245,19 @@ export default function Messages() {
                     <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
                   ))}
                 </select>
+                {/* Language selector for compose */}
+                <select
+                  className="w-full px-4 py-2 border rounded-lg"
+                  value={composeLanguage}
+                  onChange={e => setComposeLanguage(e.target.value)}
+                  required
+                  style={{ marginTop: 8 }}
+                >
+                  <option value="en">English</option>
+                  <option value="rw">Kinyarwanda</option>
+                  <option value="fr">French</option>
+                  <option value="sw">Swahili</option>
+                </select>
                 {allUsers.length === 0 && (
                   <div className="text-sm text-red-500">You have no assigned users to message. Please contact the admin if you believe this is an error.</div>
                 )}
@@ -259,6 +305,38 @@ export default function Messages() {
                         >
                           {new Date(msg.createdAt).toLocaleString()}
                         </div>
+                        {/* Translate button for received messages */}
+                        {!isMe && (
+                          <div className="mt-2">
+                            <select
+                              className="px-2 py-1 border rounded text-xs mr-2"
+                              value={targetLang}
+                              onChange={e => setTargetLang(e.target.value)}
+                            >
+                              <option value="en">English</option>
+                              <option value="rw">Kinyarwanda</option>
+                              <option value="fr">French</option>
+                              <option value="sw">Swahili</option>
+                            </select>
+                            <button
+                              className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
+                              onClick={() => handleTranslate(msg)}
+                              disabled={translation[msg.id]?.loading}
+                            >
+                              {translation[msg.id]?.loading ? 'Translating...' : 'Translate'}
+                            </button>
+                            {translation[msg.id]?.text && (
+                              <div className="mt-2 p-2 bg-blue-50 rounded text-xs text-blue-900 border border-blue-200">
+                                <strong>Translation:</strong> {translation[msg.id].text}
+                              </div>
+                            )}
+                            {translation[msg.id]?.error && (
+                              <div className="mt-2 p-2 bg-red-50 rounded text-xs text-red-900 border border-red-200">
+                                <strong>Error:</strong> {translation[msg.id].error}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   )
@@ -266,6 +344,17 @@ export default function Messages() {
               )}
             </div>
             <form className="flex items-center space-x-2" onSubmit={handleSend}>
+              <select
+                className="px-2 py-2 border rounded-lg"
+                value={messageLanguage}
+                onChange={e => setMessageLanguage(e.target.value)}
+                style={{ maxWidth: 120 }}
+              >
+                <option value="en">English</option>
+                <option value="rw">Kinyarwanda</option>
+                <option value="fr">French</option>
+                <option value="sw">Swahili</option>
+              </select>
               <input
                 type="text"
                 className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"

@@ -119,6 +119,12 @@ export default function Sidebar() {
       path: '/admin/settings',
       icon: '⚙️',
       description: 'System settings'
+    },
+    {
+      name: 'Assignments',
+      path: '/admin/assignments',
+      icon: '🔗',
+      description: 'Manage sponsor-sponsee assignments'
     }
   ]
 

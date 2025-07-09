@@ -16,6 +16,7 @@ import Messages from '../pages/Messages'
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminUsers from '../pages/admin/AdminUsers'
 import AdminSponsorships from '../pages/admin/AdminSponsorships'
+import AdminAssignments from '../pages/admin/AdminAssignments'
 
 // Placeholder components for sidebar navigation
 const Dashboard = () => (
@@ -112,6 +113,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/sponsorships" element={<AdminSponsorships />} />
+          <Route path="/admin/assignments" element={<AdminAssignments />} />
         </Routes>
       </Router>
     </NotificationProvider>

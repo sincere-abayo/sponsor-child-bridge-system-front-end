@@ -119,7 +119,10 @@ export default function CreateSponsorship() {
                 ))}
               </select>
               {sponsees.length === 0 && (
-                <p className="text-sm text-red-500 mt-1">You have no assigned sponsees. Please contact the admin to be assigned before you can sponsor a child.</p>
+                <div className="mt-2">
+                  <p className="text-sm text-red-500">You have no assigned sponsees. Please contact the admin to be assigned before you can sponsor a child.</p>
+                  <p className="text-xs text-gray-500 mt-1">Note: If you have been assigned but still do not see any sponsees, make sure your sponsee profile is filled out completely and marked as active. Incomplete or inactive profiles cannot be sponsored.</p>
+                </div>
               )}
             </div>
 

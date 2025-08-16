@@ -1,5 +1,9 @@
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
@@ -9,4 +13,4 @@ export default defineConfig({
       '/api': 'http://localhost:5000',
     },
   },
-})
+});

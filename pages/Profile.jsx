@@ -211,7 +211,10 @@ export default function Profile() {
           <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
             <h2 className="text-xl font-bold mb-2">My Assigned Sponsors</h2>
             {assignedUsers.length === 0 ? (
-              <div className="text-gray-500">No assigned sponsors.</div>
+              <div>
+                <div className="text-gray-500">No assigned sponsors.</div>
+                <div className="mt-2 text-xs text-red-500">Note: Your profile must be filled out completely and marked as active to be eligible for sponsorship or assignment. Incomplete or inactive profiles will not be assigned sponsors.</div>
+              </div>
             ) : (
               <ul className="list-disc pl-6">
                 {assignedUsers.map(u => (

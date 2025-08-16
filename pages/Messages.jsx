@@ -44,18 +44,28 @@ export default function Messages() {
     if (!showCompose) return
     const userRole = localStorage.getItem('userRole')
     if (userRole === 'sponsor') {
-      // Use the same logic as CreateSponsorship
       import('../services/api').then(({ sponsorshipAPI }) => {
         sponsorshipAPI.getAvailableSponsees().then(res => {
-          setAllUsers((res.sponsees || []).map(p => p.user))
-        }).catch(() => showNotification('Failed to load assigned sponsees', 'error'))
+          console.log('DEBUG: getAvailableSponsees response:', res)
+          const users = (res.sponsees || []).map(p => p.user)
+          console.log('DEBUG: allUsers set to:', users)
+          setAllUsers(users)
+        }).catch((err) => {
+          console.error('DEBUG: Error loading assigned sponsees:', err)
+          showNotification('Failed to load assigned sponsees', 'error')
+        })
       })
     } else if (userRole === 'sponsee') {
-      // Fallback to current logic for sponsees
       import('../services/api').then(({ sponsorshipAPI }) => {
         sponsorshipAPI.getAvailableSponsors().then(res => {
-          setAllUsers((res.sponsors || []).map(p => p.user))
-        }).catch(() => showNotification('Failed to load assigned sponsors', 'error'))
+          console.log('DEBUG: getAvailableSponsors response:', res)
+          const users = (res.sponsors || []).map(p => p.user)
+          console.log('DEBUG: allUsers set to:', users)
+          setAllUsers(users)
+        }).catch((err) => {
+          console.error('DEBUG: Error loading assigned sponsors:', err)
+          showNotification('Failed to load assigned sponsors', 'error')
+        })
       })
     } else {
       setAllUsers([])
@@ -219,12 +229,21 @@ export default function Messages() {
       <div className="flex h-[80vh] bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Sidebar: Conversations List */}
         <aside className="w-80 border-r bg-gray-50 flex flex-col">
-          <div className="p-4 border-b font-bold text-lg text-gray-800">Conversations</div>
+          <div className="p-4 border-b flex items-center justify-between">
+            <span className="font-bold text-lg text-gray-800">Conversations</span>
+            <button
+              className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 text-sm font-semibold"
+              onClick={() => setShowCompose(true)}
+            >New Message</button>
+          </div>
           <div className="flex-1 overflow-y-auto">
             {loadingConversations ? (
               <div className="text-gray-500 p-4">Loading...</div>
             ) : conversations.length === 0 ? (
-              <div className="text-gray-400 p-4">No conversations found.</div>
+              <div className="text-gray-400 p-4">
+                No conversations found.<br />
+                <span className="text-xs text-green-700">You can start a new conversation with your assigned users using the "New Message" button.</span>
+              </div>
             ) : (
               conversations.map(conv => {
                 const isSelected = selectedConversation && conv.user.id === selectedConversation.user.id
@@ -437,8 +456,10 @@ export default function Messages() {
                   <option value="fr">French</option>
                   <option value="sw">Swahili</option>
                 </select>
-                {allUsers.length === 0 && (
+                {allUsers.length === 0 ? (
                   <div className="text-sm text-red-500">You have no assigned users to message. Please contact the admin if you believe this is an error.</div>
+                ) : (
+                  <div className="text-xs text-green-700 mb-2">You can start a new conversation with your assigned sponsor or sponsee here.</div>
                 )}
                 <textarea
                   className="w-full px-4 py-2 border rounded-lg"

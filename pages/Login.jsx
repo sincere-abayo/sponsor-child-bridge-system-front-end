@@ -29,26 +29,15 @@ export default function Login() {
     const res = await authAPI.login(formData)
     if (res.token) {
       setShowSuccess(true)
-      // Optionally save token: 
       localStorage.setItem('token', res.token)
-      const role = res.user.role
-      if (role === 'sponsor') {
-        
-        setTimeout(() => navigate('/sponsor/dashboard'), 2000)
-
-      }
-      if (role === 'sponsee') {
-        
-
-      setTimeout(() => navigate('/sponsee/dashboard'), 2000)
+      localStorage.setItem('userRole', res.user.role)
+      localStorage.setItem('userData', JSON.stringify(res.user))
       
-    } 
-    if (role === 'admin') {
-        
-        setTimeout(() => navigate('/admin/dashboard'), 2000)
-      }
-  }
-  else {
+      // Redirect to profile page for now (we'll implement dashboards later)
+      setTimeout(() => {
+        navigate('/profile')
+      }, 1500)
+    } else {
       setFormError(res.message || 'Login failed')
     }
   } catch {
@@ -70,7 +59,7 @@ export default function Login() {
           )}
           {showSuccess && (
             <div className="mb-4 text-green-600 text-sm text-center">
-              Login successful! Redirecting...
+              Login successful! Redirecting to your dashboard...
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -15,43 +15,180 @@ export const authAPI = {
       body: JSON.stringify(data),
     }).then(res => res.json()),
 }
-function authHeaders() {
-  const token = localStorage.getItem('token')
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  }
+
+// Profile API functions
+export const profileAPI = {
+  createSponsorProfile: (data) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/profiles/sponsor`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json())
+  },
+
+  createSponseeProfile: (data) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/profiles/sponsee`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json())
+  },
+
+  getMyProfile: () => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/profiles/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getSponsorProfiles: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/profiles/sponsors?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getSponseeProfiles: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/profiles/sponsees?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
 }
 
-export const sponseeAPI = {
-  getAvailable: () =>
-    fetch(`${API_URL}/sponsees/available`, {
-      headers: authHeaders(),
-    }).then(res => res.json()),
-
-  adopt: (id) =>
-    fetch(`${API_URL}/sponsees/${id}/adopt`, {
+// Sponsorship API functions
+export const sponsorshipAPI = {
+  createSponsorship: (data) => {
+    const token = localStorage.getItem('token')
+    const formData = new FormData()
+    for (const key in data) {
+      if (data[key] !== undefined && data[key] !== null) {
+        formData.append(key, data[key])
+      }
+    }
+    return fetch(`${API_URL}/sponsorships`, {
       method: 'POST',
-      headers: authHeaders(),
-    }).then(res => res.json()),
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    }).then(res => res.json())
+  },
 
-  getAdopted: () =>
-    fetch(`${API_URL}/sponsees/adopted`, {
-      headers: authHeaders(),
-    }).then(res => res.json()),
-    
+  getMySponsorships: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/sponsorships?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getSponsorship: (id) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/sponsorships/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  updateSponsorshipStatus: (id, data) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/sponsorships/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json())
+  },
+
+  getSponsorshipHistory: (period = 'all') => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/sponsorships/history?period=${period}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getAvailableSponsees: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/sponsorships/available-sponsees?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  getAvailableSponsors: (filters = {}) => {
+    const token = localStorage.getItem('token')
+    const params = new URLSearchParams(filters)
+    return fetch(`${API_URL}/sponsorships/available-sponsors?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
 }
 
-export const messageAPI = {
-  getMessages: (sponseeId) =>
-    fetch(`${API_URL}/messages?sponseeId=${sponseeId}`, {
-      headers: authHeaders(),
-    }).then(res => res.json()),
-
-  sendMessage: (to_id, content) =>
-    fetch(`${API_URL}/messages`, {
+// Confirmation API functions
+export const confirmationAPI = {
+  createConfirmation: (data) => {
+    const token = localStorage.getItem('token')
+    const formData = new FormData()
+    for (const key in data) {
+      if (data[key] !== undefined && data[key] !== null) {
+        formData.append(key, data[key])
+      }
+    }
+    return fetch(`${API_URL}/confirmations`, {
       method: 'POST',
-      headers: authHeaders(),
-      body: JSON.stringify({ to_id, content }),
-    }).then(res => res.json()),
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    }).then(res => res.json())
+  },
+
+  getConfirmations: (sponsorshipId) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/confirmations/${sponsorshipId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }).then(res => res.json())
+  },
+
+  updateConfirmationStatus: (id, data) => {
+    const token = localStorage.getItem('token')
+    return fetch(`${API_URL}/confirmations/${id}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    }).then(res => res.json())
+  },
 }

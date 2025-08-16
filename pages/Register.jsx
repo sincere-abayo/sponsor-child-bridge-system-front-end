@@ -11,7 +11,7 @@ export default function Register() {
     password: '',
     confirmPassword: '',
     phone: '',
-    role: 'sponsor',
+    role: 'sponsor', // Default role
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -47,6 +47,10 @@ export default function Register() {
       setFormError('Passwords do not match')
       return false
     }
+    if (!formData.role) {
+      setFormError('Please select a role')
+      return false
+    }
     return true
   }
 
@@ -59,7 +63,7 @@ const handleSubmit = async (e) => {
     const res = await authAPI.register(formData)
     if (res.message === 'Registered successfully') {
       setShowSuccess(true)
-      setTimeout(() => navigate('/login'), 2000)
+      setTimeout(() => navigate('/login'), 1500)
     } else {
       setFormError(res.message || 'Registration failed')
     }
@@ -184,7 +188,7 @@ const handleSubmit = async (e) => {
             </div>
             <div>
               <label className="block text-gray-700 font-semibold mb-1" htmlFor="role">
-                Role
+                I am a:
               </label>
               <select
                 id="role"
@@ -192,23 +196,26 @@ const handleSubmit = async (e) => {
                 className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 value={formData.role}
                 onChange={handleChange}
+                required
               >
-                <option value="sponsor">Sponsor</option>
-                <option value="sponsee">Sponsee</option>
+                <option value="sponsor">Sponsor (I want to help children)</option>
+                <option value="sponsee">Sponsee (I need sponsorship)</option>
               </select>
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition"
+              className="w-full bg-blue-700 text-white py-2 px-4 rounded hover:bg-blue-800 font-semibold transition-colors"
             >
               Create Account
             </button>
           </form>
-          <div className="text-center mt-4 text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="text-blue-700 font-semibold hover:underline">
-              Sign in
-            </Link>
+          <div className="text-center mt-6">
+            <p className="text-gray-600">
+              Already have an account?{' '}
+              <Link to="/login" className="text-blue-700 font-semibold hover:underline">
+                Sign In
+              </Link>
+            </p>
           </div>
         </div>
       </div>

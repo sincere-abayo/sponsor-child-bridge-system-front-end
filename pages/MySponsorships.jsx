@@ -57,21 +57,21 @@ export default function MySponsorships() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'completed': return 'bg-blue-100 text-blue-800'
-      case 'cancelled': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active': return 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      case 'pending': return 'bg-amber-50 text-amber-700 border-amber-200'
+      case 'completed': return 'bg-blue-50 text-blue-700 border-blue-200'
+      case 'cancelled': return 'bg-red-50 text-red-700 border-red-200'
+      default: return 'bg-gray-50 text-gray-700 border-gray-200'
     }
   }
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'active': return '✅'
-      case 'pending': return '⏳'
-      case 'completed': return '🎓'
-      case 'cancelled': return '❌'
-      default: return '❓'
+      case 'active': return '🟢'
+      case 'pending': return '🟡'
+      case 'completed': return '🔵'
+      case 'cancelled': return '🔴'
+      default: return '⚪'
     }
   }
 
@@ -99,8 +99,12 @@ export default function MySponsorships() {
   if (loading) {
     return (
       <Layout>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-gray-600">Loading sponsorships...</div>
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-500 mx-auto mb-4"></div>
+            <div className="text-lg text-gray-600 font-medium">Loading sponsorships...</div>
+            <div className="text-sm text-gray-400 mt-2">Please wait while we fetch your data</div>
+          </div>
         </div>
       </Layout>
     )
@@ -108,216 +112,294 @@ export default function MySponsorships() {
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{heading}</h1>
-              <p className="text-gray-600">Manage your sponsorship relationships</p>
+      <div className="w-full min-h-screen bg-gray-50">
+        <div className="max-w-full mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
+          {/* Enhanced Mobile-First Header */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+            <div className="p-4 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-primary-50 to-secondary-50">
+              <div className="flex flex-col space-y-4">
+                <div className="text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{heading}</h1>
+                  <p className="text-sm sm:text-base text-gray-600">Manage your sponsorship relationships</p>
+                </div>
+                {userRole === 'sponsor' && (
+                  <div className="flex justify-center sm:justify-start">
+                    <Link
+                      to="/create-sponsorship"
+                      className="inline-flex items-center px-4 py-2 bg-success-500 hover:bg-success-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-sm sm:text-base"
+                    >
+                      <span className="mr-2">✨</span>
+                      Create New
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
-            {userRole === 'sponsor' && (
-              <Link
-                to="/create-sponsorship"
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Create New Sponsorship
-              </Link>
-            )}
+
+            {/* Mobile-Optimized Filters */}
+            <div className="p-4 sm:p-6">
+              <div className="flex flex-col space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Filter by Status:</span>
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    {sponsorships.length} found
+                  </span>
+                </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 text-sm"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="pending">⏳ Pending</option>
+                  <option value="active">🟢 Active</option>
+                  <option value="completed">🔵 Completed</option>
+                  <option value="cancelled">🔴 Cancelled</option>
+                </select>
+              </div>
+            </div>
           </div>
 
-          {/* Filters */}
-          <div className="mt-4 flex items-center space-x-4">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Sponsorships List */}
-        {sponsorships.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-            <div className="text-6xl mb-4">🤝</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Sponsorships Found</h3>
-            <p className="text-gray-600 mb-4">{emptyMsg}</p>
-            {userRole === 'sponsor' && (
-              <Link
-                to="/create-sponsorship"
-                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Create Your First Sponsorship
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="grid gap-6">
-            {sponsorships.map((sponsorship) => (
-              <div key={sponsorship.id} className="bg-white rounded-lg shadow-lg p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(sponsorship.status)}`}>
+          {/* Mobile-Optimized Sponsorships List */}
+          {sponsorships.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+              <div className="text-5xl sm:text-6xl mb-4">🤝</div>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">No Sponsorships Found</h3>
+              <p className="text-gray-600 mb-6 max-w-sm mx-auto text-sm sm:text-base">{emptyMsg}</p>
+              {userRole === 'sponsor' && (
+                <Link
+                  to="/create-sponsorship"
+                  className="inline-flex items-center px-6 py-3 bg-success-500 hover:bg-success-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                >
+                  <span className="mr-2">✨</span>
+                  Create Your First Sponsorship
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {sponsorships.map((sponsorship) => (
+                <div key={sponsorship.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+                  {/* Mobile-Optimized Card Header */}
+                  <div className="p-4 sm:p-6">
+                    {/* Status and Date - Mobile First */}
+                    <div className="flex flex-wrap items-center justify-between mb-4 gap-2">
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${getStatusColor(sponsorship.status)}`}>
                         <span className="mr-1">{getStatusIcon(sponsorship.status)}</span>
                         {sponsorship.status.charAt(0).toUpperCase() + sponsorship.status.slice(1)}
                       </span>
-                      <span className="text-sm text-gray-500">
-                        Created {formatDate(sponsorship.createdAt)}
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                        📅 {formatDate(sponsorship.createdAt)}
                       </span>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+
+                    {/* Main Title - Mobile Optimized */}
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 leading-tight">
                       {userRole === 'sponsor'
-                        ? `Sponsoring ${sponsorship.sponsee?.name}`
-                        : `Sponsored by ${sponsorship.sponsor?.name}`
+                        ? `Sponsoring ${sponsorship.sponsee?.name || 'Child'}`
+                        : `Sponsored by ${sponsorship.sponsor?.name || 'Sponsor'}`
                       }
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-600">Type:</span>
-                        <div className="capitalize">{sponsorship.type?.replace('_', ' ')}</div>
+
+                    {/* Key Details - Mobile Grid */}
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="text-xs font-medium text-gray-600 mb-1">Type</div>
+                        <div className="text-sm font-semibold text-gray-900 capitalize">{sponsorship.type?.replace('_', ' ')}</div>
                       </div>
+                      
                       {sponsorship.type === 'money' ? (
-                        <div>
-                          <span className="font-medium text-gray-600">Amount:</span>
-                          <div className="text-lg font-semibold text-green-600">
+                        <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+                          <div className="text-xs font-medium text-gray-600 mb-1">Amount</div>
+                          <div className="text-base font-bold text-emerald-700">
                             {formatCurrency(sponsorship.amount)}
                           </div>
                         </div>
                       ) : (
-                        <div>
-                          <span className="font-medium text-gray-600">Value/Description:</span>
-                          <div className="text-green-700 font-semibold">{sponsorship.value || 'N/A'}</div>
+                        <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                          <div className="text-xs font-medium text-gray-600 mb-1">Value</div>
+                          <div className="text-sm font-semibold text-blue-700">{sponsorship.value || 'N/A'}</div>
                         </div>
                       )}
-                      <div>
-                        <span className="font-medium text-gray-600">Frequency:</span>
-                        <div className="capitalize">{sponsorship.frequency.replace('_', ' ')}</div>
+                      
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="text-xs font-medium text-gray-600 mb-1">Frequency</div>
+                        <div className="text-sm font-semibold text-gray-900 capitalize">{sponsorship.frequency.replace('_', ' ')}</div>
                       </div>
-                      <div>
-                        <span className="font-medium text-gray-600">Start Date:</span>
-                        <div>{formatDate(sponsorship.startDate)}</div>
+                      
+                      <div className="bg-gray-50 p-3 rounded-lg">
+                        <div className="text-xs font-medium text-gray-600 mb-1">Start Date</div>
+                        <div className="text-sm font-semibold text-gray-900">{formatDate(sponsorship.startDate)}</div>
                       </div>
-                      {sponsorship.nextPaymentDate && (
-                        <div>
-                          <span className="font-medium text-gray-600">Next Payment:</span>
-                          <div>{formatDate(sponsorship.nextPaymentDate)}</div>
-                        </div>
-                      )}
-                      {sponsorship.expectedDeliveryDate && (
-                        <div>
-                          <span className="font-medium text-gray-600">Expected Delivery:</span>
-                          <div>{formatDate(sponsorship.expectedDeliveryDate)}</div>
-                        </div>
-                      )}
-                      {sponsorship.proofFile && (
-                        <div>
-                          <span className="font-medium text-gray-600">Proof:</span>
-                          <a href={`http://localhost:5000${sponsorship.proofFile}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View File</a>
-                        </div>
-                      )}
                     </div>
-                    {sponsorship.description && (
-                      <div className="mt-3">
-                        <span className="font-medium text-gray-600">Description:</span>
-                        <p className="text-gray-700 mt-1">{sponsorship.description}</p>
+
+                    {/* Additional Dates - Conditional Mobile Layout */}
+                    {(sponsorship.nextPaymentDate || sponsorship.expectedDeliveryDate) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                        {sponsorship.nextPaymentDate && (
+                          <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                            <div className="text-xs font-medium text-gray-600 mb-1">Next Payment</div>
+                            <div className="text-sm font-semibold text-amber-700">{formatDate(sponsorship.nextPaymentDate)}</div>
+                          </div>
+                        )}
+                        
+                        {sponsorship.expectedDeliveryDate && (
+                          <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                            <div className="text-xs font-medium text-gray-600 mb-1">Expected Delivery</div>
+                            <div className="text-sm font-semibold text-purple-700">{formatDate(sponsorship.expectedDeliveryDate)}</div>
+                          </div>
+                        )}
                       </div>
                     )}
-                    {sponsorship.notes && (
-                      <div className="mt-2">
-                        <span className="font-medium text-gray-600">Notes:</span>
-                        <p className="text-gray-700 mt-1">{sponsorship.notes}</p>
+
+                    {/* Description and Notes - Mobile Optimized */}
+                    {(sponsorship.description || sponsorship.notes) && (
+                      <div className="space-y-3 mb-4">
+                        {sponsorship.description && (
+                          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <div className="text-xs font-medium text-blue-800 mb-1">📝 Description</div>
+                            <p className="text-blue-900 text-sm leading-relaxed">{sponsorship.description}</p>
+                          </div>
+                        )}
+                        {sponsorship.notes && (
+                          <div className="bg-gray-50 p-3 rounded-lg">
+                            <div className="text-xs font-medium text-gray-800 mb-1">📌 Notes</div>
+                            <p className="text-gray-900 text-sm leading-relaxed">{sponsorship.notes}</p>
+                          </div>
+                        )}
                       </div>
                     )}
-                    {/* Sponsee/Sponsor Details */}
-                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        {userRole === 'sponsor' ? 'Child Details:' : 'Sponsor Details:'}
+
+                    {/* Proof File - Mobile Optimized */}
+                    {sponsorship.proofFile && (
+                      <div className="mb-4">
+                        <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                          <div className="text-xs font-medium text-green-800 mb-1">📎 Proof Document</div>
+                          <a 
+                            href={`http://localhost:5000${sponsorship.proofFile}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="inline-flex items-center text-green-700 hover:text-green-800 font-medium transition-colors duration-200 text-sm"
+                          >
+                            <span className="mr-1">🔗</span>
+                            View File
+                          </a>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Participant Details - Mobile Optimized */}
+                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 rounded-lg border border-gray-200 mb-4">
+                      <h4 className="text-base font-semibold text-gray-900 mb-3 flex items-center">
+                        <span className="mr-2">
+                          {userRole === 'sponsor' ? '👶' : '🤝'}
+                        </span>
+                        {userRole === 'sponsor' ? 'Child Details' : 'Sponsor Details'}
                       </h4>
                       {userRole === 'sponsor' ? (
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div><span className="font-medium">Name:</span> {sponsorship.sponsee?.name}</div>
-                          <div><span className="font-medium">Age:</span> {sponsorship.sponsee?.sponseeProfile?.age} years</div>
-                          <div><span className="font-medium">Location:</span> {sponsorship.sponsee?.sponseeProfile?.location}</div>
-                          <div><span className="font-medium">School:</span> {sponsorship.sponsee?.sponseeProfile?.schoolName || 'Not specified'}</div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="text-xs font-medium text-gray-600">Name:</span>
+                            <div className="font-semibold text-gray-900 text-sm">{sponsorship.sponsee?.name || 'N/A'}</div>
+                          </div>
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="text-xs font-medium text-gray-600">Age:</span>
+                            <div className="font-semibold text-gray-900 text-sm">{sponsorship.sponsee?.sponseeProfile?.age || 'N/A'} years</div>
+                          </div>
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="text-xs font-medium text-gray-600">Location:</span>
+                            <div className="font-semibold text-gray-900 text-sm">{sponsorship.sponsee?.sponseeProfile?.location || 'N/A'}</div>
+                          </div>
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="text-xs font-medium text-gray-600">School:</span>
+                            <div className="font-semibold text-gray-900 text-sm">{sponsorship.sponsee?.sponseeProfile?.schoolName || 'Not specified'}</div>
+                          </div>
                         </div>
                       ) : (
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div><span className="font-medium">Name:</span> {sponsorship.sponsor?.name}</div>
-                          <div><span className="font-medium">Occupation:</span> {sponsorship.sponsor?.sponsorProfile?.occupation || 'Not specified'}</div>
-                          <div><span className="font-medium">Location:</span> {sponsorship.sponsor?.sponsorProfile?.preferredLocation || 'Not specified'}</div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="text-xs font-medium text-gray-600">Name:</span>
+                            <div className="font-semibold text-gray-900 text-sm">{sponsorship.sponsor?.name || 'N/A'}</div>
+                          </div>
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="text-xs font-medium text-gray-600">Occupation:</span>
+                            <div className="font-semibold text-gray-900 text-sm">{sponsorship.sponsor?.sponsorProfile?.occupation || 'Not specified'}</div>
+                          </div>
+                          <div className="bg-white p-3 rounded-lg">
+                            <span className="text-xs font-medium text-gray-600">Location:</span>
+                            <div className="font-semibold text-gray-900 text-sm">{sponsorship.sponsor?.sponsorProfile?.preferredLocation || 'Not specified'}</div>
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
-                  {/* Action Buttons */}
-                  <div className="flex flex-col space-y-2 ml-4">
-                    <Link
-                      to={`/sponsorship/${sponsorship.id}`}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                    >
-                      View Details
-                    </Link>
-                    {userRole === 'sponsor' && sponsorship.status === 'pending' && (
-                      <div className="flex flex-col space-y-1">
+
+                    {/* Mobile-Optimized Action Buttons */}
+                    <div className="flex flex-col space-y-2">
+                      <Link
+                        to={`/sponsorship/${sponsorship.id}`}
+                        className="w-full bg-primary-500 hover:bg-primary-600 text-white font-medium py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-center text-sm"
+                      >
+                        👁️ View Details
+                      </Link>
+                      
+                      {userRole === 'sponsor' && sponsorship.status === 'pending' && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => handleStatusUpdate(sponsorship.id, 'active')}
+                            className="bg-success-500 hover:bg-success-600 text-white font-medium py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-sm"
+                          >
+                            ✅ Activate
+                          </button>
+                          <button
+                            onClick={() => handleStatusUpdate(sponsorship.id, 'cancelled')}
+                            className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-sm"
+                          >
+                            ❌ Cancel
+                          </button>
+                        </div>
+                      )}
+                      
+                      {userRole === 'sponsor' && sponsorship.status === 'active' && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => handleStatusUpdate(sponsorship.id, 'completed')}
+                            className="bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-sm"
+                          >
+                            🎓 Complete
+                          </button>
+                          <button
+                            onClick={() => handleStatusUpdate(sponsorship.id, 'cancelled')}
+                            className="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-sm"
+                          >
+                            ❌ Cancel
+                          </button>
+                        </div>
+                      )}
+                      
+                      {userRole === 'sponsor' && sponsorship.status === 'cancelled' && (
                         <button
                           onClick={() => handleStatusUpdate(sponsorship.id, 'active')}
-                          className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          className="w-full bg-success-500 hover:bg-success-600 text-white font-medium py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-sm"
                         >
-                          Activate
+                          🔄 Reactivate
                         </button>
-                        <button
-                          onClick={() => handleStatusUpdate(sponsorship.id, 'cancelled')}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                      )}
+                      
+                      {userRole === 'sponsor' && sponsorship.status === 'pending' && (
+                        <Link
+                          to={`/sponsorship/${sponsorship.id}/edit`}
+                          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-center text-sm"
                         >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                    {userRole === 'sponsor' && sponsorship.status === 'active' && (
-                      <div className="flex flex-col space-y-1">
-                        <button
-                          onClick={() => handleStatusUpdate(sponsorship.id, 'completed')}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                        >
-                          Complete
-                        </button>
-                        <button
-                          onClick={() => handleStatusUpdate(sponsorship.id, 'cancelled')}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
-                    {userRole === 'sponsor' && sponsorship.status === 'cancelled' && (
-                      <button
-                        onClick={() => handleStatusUpdate(sponsorship.id, 'active')}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-                      >
-                        Activate
-                      </button>
-                    )}
-                    {userRole === 'sponsor' && sponsorship.status === 'pending' && (
-                      <Link
-                        to={`/sponsorship/${sponsorship.id}/edit`}
-                        className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm"
-                      >
-                        Edit
-                      </Link>
-                    )}
+                          ✏️ Edit
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
   )

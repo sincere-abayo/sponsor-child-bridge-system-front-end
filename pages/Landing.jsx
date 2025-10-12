@@ -19,13 +19,13 @@ export default function Landing() {
           <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="/register"
-              className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
+              className="bg-white text-[#009688] px-8 py-3 rounded-lg font-semibold hover:bg-[#009688]/10 transition-colors"
             >
               Get Started
             </a>
             <a
               href="/login"
-              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#009688] transition-colors"
             >
               Sign In
             </a>
@@ -35,22 +35,22 @@ export default function Landing() {
 
       {/* Stats Section */}
       <section className="bg-white py-16">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="bg-green-50 p-6 rounded-xl">
-            <div className="text-3xl font-bold text-green-600">150+</div>
-            <div className="text-gray-600 font-medium">Sponsors</div>
+        <div className="max-w-4xl mx-auto stats-grid text-center">
+          <div className="stat-card">
+            <div className="stat-value text-[#009688]">150+</div>
+            <div className="stat-label">Sponsors</div>
           </div>
-          <div className="bg-blue-50 p-6 rounded-xl">
-            <div className="text-3xl font-bold text-blue-600">300+</div>
-            <div className="text-gray-600 font-medium">Children Helped</div>
+          <div className="stat-card">
+            <div className="stat-value text-[#2196f3]">300+</div>
+            <div className="stat-label">Children Helped</div>
           </div>
-          <div className="bg-yellow-50 p-6 rounded-xl">
-            <div className="text-3xl font-bold text-yellow-600">25M+</div>
-            <div className="text-gray-600 font-medium">RWF Raised</div>
+          <div className="stat-card">
+            <div className="stat-value text-[#22c55e]">25M+</div>
+            <div className="stat-label">RWF Raised</div>
           </div>
-          <div className="bg-purple-50 p-6 rounded-xl">
-            <div className="text-3xl font-bold text-purple-600">5</div>
-            <div className="text-gray-600 font-medium">Provinces</div>
+          <div className="stat-card">
+            <div className="stat-value text-purple-600">5</div>
+            <div className="stat-label">Provinces</div>
           </div>
         </div>
       </section>
@@ -58,30 +58,30 @@ export default function Landing() {
       {/* How It Works Section */}
       <section className="bg-gray-50 py-16">
         <div className="max-w-4xl mx-auto text-center mb-12 px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">How It Works</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+          <h2 className="text-heading-1 mb-4">How It Works</h2>
+          <p className="text-body max-w-2xl mx-auto text-lg">
             Simple steps to connect sponsors with children in need
           </p>
         </div>
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-            <div className="text-green-600 text-5xl mb-4">👤</div>
-            <h3 className="font-bold text-xl mb-4">Create Profile</h3>
-            <p className="text-gray-600">
+          <div className="card-lg p-8 text-center">
+            <div className="text-[#009688] text-5xl mb-4">👤</div>
+            <h3 className="text-heading-2 mb-4">Create Profile</h3>
+            <p className="text-body">
               Sign up as a sponsor or sponsee. Complete your profile with basic information.
             </p>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-            <div className="text-blue-600 text-5xl mb-4">🤝</div>
-            <h3 className="font-bold text-xl mb-4">Connect</h3>
-            <p className="text-gray-600">
+          <div className="card-lg p-8 text-center">
+            <div className="text-[#2196f3] text-5xl mb-4">🤝</div>
+            <h3 className="text-heading-2 mb-4">Connect</h3>
+            <p className="text-body">
               Sponsors browse children's profiles. Sponsees share their needs and goals.
             </p>
           </div>
-          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
-            <div className="text-green-600 text-5xl mb-4">📚</div>
-            <h3 className="font-bold text-xl mb-4">Support</h3>
-            <p className="text-gray-600">
+          <div className="card-lg p-8 text-center">
+            <div className="text-[#22c55e] text-5xl mb-4">📚</div>
+            <h3 className="text-heading-2 mb-4">Support</h3>
+            <p className="text-body">
               Establish sponsorship and track progress. Help children achieve their dreams.
             </p>
           </div>
@@ -91,42 +91,42 @@ export default function Landing() {
       {/* Features Section */}
       <section className="bg-white py-16">
         <div className="max-w-4xl mx-auto text-center mb-12 px-4">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Why Choose SponsorBridge?</h2>
+          <h2 className="text-heading-1 mb-4">Why Choose SponsorBridge?</h2>
         </div>
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center px-4">
           <div className="space-y-8">
             <div className="flex items-start">
-              <div className="bg-green-100 text-green-600 rounded-lg p-3 mr-4">
+              <div className="bg-[#009688]/10 text-[#009688] rounded-lg p-3 mr-4">
                 <span className="text-2xl">🎓</span>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Education Focus</h3>
-                <p className="text-gray-600">
+                <h3 className="text-heading-2 mb-2">Education Focus</h3>
+                <p className="text-body">
                   Supporting children's education through school fees, books, and supplies.
                 </p>
               </div>
             </div>
             <div className="flex items-start">
-              <div className="bg-blue-100 text-blue-600 rounded-lg p-3 mr-4">
+              <div className="bg-[#2196f3]/10 text-[#2196f3] rounded-lg p-3 mr-4">
                 <span className="text-2xl">🏠</span>
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Local Impact</h3>
-                <p className="text-gray-600">
+                <h3 className="text-heading-2 mb-2">Local Impact</h3>
+                <p className="text-body">
                   Focused on helping children across Rwanda's five provinces.
                 </p>
               </div>
             </div>
             <div className="flex items-start">
-              <div className="bg-yellow-100 text-yellow-600 rounded-lg p-3 mr-4">
-                <span className="text-2xl">🔒</span>
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Safe & Secure</h3>
-                <p className="text-gray-600">
-                  Verified profiles and secure transactions for peace of mind.
-                </p>
-              </div>
+                          <div className="bg-yellow-100 text-yellow-600 rounded-lg p-3 mr-4">
+              <span className="text-2xl">🔒</span>
+            </div>
+            <div>
+              <h3 className="text-heading-2 mb-2">Safe & Secure</h3>
+              <p className="text-body">
+                Verified profiles and secure transactions for peace of mind.
+              </p>
+            </div>
             </div>
           </div>
           <div className="text-center">
@@ -151,13 +151,13 @@ export default function Landing() {
           <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="/register"
-              className="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
+              className="btn-primary btn-lg"
             >
               Get Started Today
             </a>
             <a
               href="/login"
-              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors"
+              className="btn-outline btn-lg border-white text-white hover:bg-white hover:text-green-600"
             >
               Sign In
             </a>

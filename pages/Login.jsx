@@ -48,38 +48,38 @@ export default function Login() {
   return (
     <div>
       <Navbar />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-8">
-        <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[#009688]/10 to-[#2196f3]/10 py-8">
+        <div className="card-lg p-8 w-full max-w-md">
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-blue-700 mb-1">Welcome Back</h1>
-            <p className="text-gray-500">Sign in to continue your journey</p>
+            <h1 className="text-heading-1 text-[#009688] mb-1">Welcome Back</h1>
+            <p className="text-muted">Sign in to continue your journey</p>
           </div>
           {(formError) && (
-            <div className="mb-4 text-red-600 text-sm text-center">{formError}</div>
+            <div className="badge-error mb-4 text-center">{formError}</div>
           )}
           {showSuccess && (
-            <div className="mb-4 text-green-600 text-sm text-center">
+            <div className="badge-success mb-4 text-center">
               Login successful! Redirecting to your dashboard...
             </div>
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 font-semibold mb-1" htmlFor="email">
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">
                 Email Address
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="input"
                 value={formData.email}
                 onChange={handleChange}
                 required
                 autoComplete="email"
               />
             </div>
-            <div>
-              <label className="block text-gray-700 font-semibold mb-1" htmlFor="password">
+            <div className="form-group">
+              <label className="form-label" htmlFor="password">
                 Password
               </label>
               <div className="relative">
@@ -87,7 +87,7 @@ export default function Login() {
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="input"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -105,14 +105,14 @@ export default function Login() {
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded transition"
+              className="btn-primary w-full"
             >
               Sign In
             </button>
           </form>
-          <div className="text-center mt-4 text-gray-600">
+          <div className="text-center mt-4 text-muted">
             Don't have an account?{' '}
-            <Link to="/register" className="text-blue-700 font-semibold hover:underline">
+            <Link to="/register" className="text-[#2196f3] font-semibold hover:underline">
               Sign up
             </Link>
           </div>

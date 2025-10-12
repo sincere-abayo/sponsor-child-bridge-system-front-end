@@ -159,9 +159,9 @@ export default function Sidebar() {
             <Link
               key={link.path}
               to={link.path}
-              className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+              className={`group flex items-center px-3 py-3 text-body font-medium rounded-lg transition-all duration-200 ${
                 isActive(link.path)
-                  ? 'bg-green-100 text-green-700 border-r-2 border-green-500'
+                  ? 'bg-[#22c55e]/10 text-[#22c55e] border-r-2 border-[#22c55e]'
                   : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
@@ -189,28 +189,28 @@ export default function Sidebar() {
                 <div className="text-gray-500 text-sm">Loading...</div>
               ) : userRole === 'sponsor' && stats ? (
                 <>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Active Sponsorships</span>
-                    <span className="font-semibold text-green-600">{stats.activeSponsorships}</span>
+                  <div className="flex justify-between text-body">
+                    <span className="text-muted">Active Sponsorships</span>
+                    <span className="font-semibold text-[#22c55e]">{stats.activeSponsorships}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Total Donated</span>
-                    <span className="font-semibold text-green-600">{stats.totalDonated?.toLocaleString('en-RW')} RWF</span>
+                  <div className="flex justify-between text-body">
+                    <span className="text-muted">Total Donated</span>
+                    <span className="font-semibold text-[#22c55e]">{stats.totalDonated?.toLocaleString('en-RW')} RWF</span>
                   </div>
                 </>
               ) : userRole === 'sponsee' && stats ? (
                 <>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Current Sponsor</span>
-                    <span className="font-semibold text-blue-600">{stats.currentSponsors}</span>
+                  <div className="flex justify-between text-body">
+                    <span className="text-muted">Current Sponsor</span>
+                    <span className="font-semibold text-[#2196f3]">{stats.currentSponsors}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Support Received</span>
-                    <span className="font-semibold text-blue-600">{stats.supportReceived?.toLocaleString('en-RW')} RWF</span>
+                    <span className="text-muted">Support Received</span>
+                    <span className="font-semibold text-[#2196f3]">{stats.supportReceived?.toLocaleString('en-RW')} RWF</span>
                   </div>
                 </>
               ) : (
-                <div className="text-gray-500 text-sm">No stats available</div>
+                <div className="text-muted text-body">No stats available</div>
               )}
             </div>
           </div>

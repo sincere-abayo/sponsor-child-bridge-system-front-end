@@ -114,41 +114,53 @@ export default function SponsorReports() {
   return (
     <Layout>
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">My Sponsorship Reports</h1>
-            <p className="text-gray-600">Overview of your sponsorship activity and financials</p>
+        <div className="page-header">
+          <div className="page-header-content">
+            <div className="page-header-inner">
+              <div>
+                <h1 className="page-title">My Sponsorship Reports</h1>
+                <p className="page-subtitle">Overview of your sponsorship activity and financials</p>
+              </div>
+              <button
+                className="btn-success"
+                onClick={handleExport}
+                disabled={exporting}
+              >{exporting ? 'Exporting...' : 'Export CSV'}</button>
+            </div>
           </div>
-          <button
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-semibold"
-            onClick={handleExport}
-            disabled={exporting}
-          >{exporting ? 'Exporting...' : 'Export CSV'}</button>
         </div>
         {loading ? (
           <div className="text-gray-600">Loading reports...</div>
         ) : (
           <>
             {/* Financial Summary */}
-            <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-              <h2 className="text-lg font-semibold mb-2">Financial Summary</h2>
-              <div className="flex flex-wrap gap-8">
-                <div>
-                  <div className="text-sm text-gray-500 mb-1">Total Donated</div>
-                  <div className="text-xl font-bold text-blue-700">{financial ? formatCurrency(financial.total) : '--'}</div>
-                </div>
-                {financial && Object.entries(financial.byStatus).map(([status, amount]) => (
-                  <div key={status}>
-                    <div className="text-sm text-gray-500 mb-1">{status.charAt(0).toUpperCase() + status.slice(1)}</div>
-                    <div className="text-xl font-bold text-green-700">{formatCurrency(amount)}</div>
+            <div className="card mb-8">
+              <div className="card-header">
+                <h2 className="text-heading-2">Financial Summary</h2>
+              </div>
+              <div className="card-body">
+                <div className="flex flex-wrap gap-8">
+                  <div>
+                    <div className="stat-label">Total Donated</div>
+                    <div className="stat-value text-[#2196f3]">{financial ? formatCurrency(financial.total) : '--'}</div>
                   </div>
-                ))}
+                  {financial && Object.entries(financial.byStatus).map(([status, amount]) => (
+                    <div key={status}>
+                      <div className="stat-label">{status.charAt(0).toUpperCase() + status.slice(1)}</div>
+                      <div className="stat-value text-[#22c55e]">{formatCurrency(amount)}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             {/* Sponsorship Activity Chart */}
-            <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
-              <h2 className="text-lg font-semibold mb-4">Sponsorships Over Time</h2>
-              <canvas ref={chartRef} height={120}></canvas>
+            <div className="card mb-8">
+              <div className="card-header">
+                <h2 className="text-heading-2">Sponsorships Over Time</h2>
+              </div>
+              <div className="card-body">
+                <canvas ref={chartRef} height={120}></canvas>
+              </div>
             </div>
           </>
         )}

@@ -41,15 +41,11 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return
-    if (user.role === 'sponsor') {
-      profileAPI.getSponseeProfiles().then(res => {
-        setAssignedUsers((res.profiles || []).map(p => p.user))
-      })
-    } else if (user.role === 'sponsee') {
-      profileAPI.getSponsorProfiles().then(res => {
-        setAssignedUsers((res.profiles || []).map(p => p.user))
-      })
-    }
+    const token = localStorage.getItem('token')
+    fetch('/api/profiles/my-assignments', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => setAssignedUsers(data.users || []))
+      .catch(() => setAssignedUsers([]))
   }, [user])
 
   const loadProfile = async () => {

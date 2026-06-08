@@ -174,7 +174,7 @@ export default function SponseeReports() {
     })
   }
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('en-RW', { style: 'currency', currency: 'RWF' }).format(amount)
+  const formatCurrency = (amount) => `RWF ${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 0 })}`
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {

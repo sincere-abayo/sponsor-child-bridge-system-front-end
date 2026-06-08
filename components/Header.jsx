@@ -98,7 +98,7 @@ export default function Header() {
         <div className="page-header-content">
           <div className="page-header-inner">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="text-2xl">🇷🇼</div>
+              <div className="text-2xl">🇷</div>
               <span className="text-heading-1">SponsorBridge</span>
             </Link>
             <div className="flex items-center space-x-4">
@@ -120,7 +120,7 @@ export default function Header() {
       <div className="page-header-content">
         <div className="page-header-inner">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="text-2xl">🇷🇼</div>
+            <div className="text-2xl">🇷</div>
             <span className="text-heading-1">SponsorBridge</span>
           </Link>
 

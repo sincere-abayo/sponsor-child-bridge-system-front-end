@@ -10,11 +10,11 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container min-h-screen flex flex-col">
       <Header />
-      <div className="flex">
+      <div className="flex flex-1 min-h-0">
         <Sidebar />
-        <main className="flex-1">
+        <main className="flex-1 min-w-0 overflow-auto">
           {children}
         </main>
       </div>

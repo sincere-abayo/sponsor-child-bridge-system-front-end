@@ -109,7 +109,7 @@ export default function SponsorReports() {
     })
   }
 
-  const formatCurrency = (amount) => new Intl.NumberFormat('en-RW', { style: 'currency', currency: 'RWF' }).format(amount)
+  const formatCurrency = (amount) => `RWF ${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 0 })}`
 
   return (
     <Layout>
@@ -134,23 +134,46 @@ export default function SponsorReports() {
         ) : (
           <>
             {/* Financial Summary */}
-            <div className="card mb-8">
-              <div className="card-header">
-                <h2 className="text-heading-2">Financial Summary</h2>
-              </div>
-              <div className="card-body">
-                <div className="flex flex-wrap gap-8">
-                  <div>
-                    <div className="stat-label">Total Donated</div>
-                    <div className="stat-value text-[#2196f3]">{financial ? formatCurrency(financial.total) : '--'}</div>
-                  </div>
-                  {financial && Object.entries(financial.byStatus).map(([status, amount]) => (
-                    <div key={status}>
-                      <div className="stat-label">{status.charAt(0).toUpperCase() + status.slice(1)}</div>
-                      <div className="stat-value text-[#22c55e]">{formatCurrency(amount)}</div>
-                    </div>
-                  ))}
+            <div className="mb-8">
+              <h2 className="text-heading-2 mb-4">Financial Summary</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Total donated */}
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">Total Donated</p>
+                  <p className="text-2xl font-bold text-secondary-600">{financial ? formatCurrency(financial.total) : '--'}</p>
+                  <p className="text-xs text-gray-400 mt-1">Money sponsorships</p>
                 </div>
+
+                {/* By status */}
+                {financial && Object.entries(financial.byStatus).map(([status, amount]) => {
+                  const colors = {
+                    active:    { text: 'text-emerald-600', bg: 'bg-emerald-50', dot: 'bg-emerald-500' },
+                    pending:   { text: 'text-amber-600',   bg: 'bg-amber-50',   dot: 'bg-amber-500' },
+                    completed: { text: 'text-blue-600',    bg: 'bg-blue-50',    dot: 'bg-blue-500' },
+                    cancelled: { text: 'text-red-600',     bg: 'bg-red-50',     dot: 'bg-red-500' },
+                  }
+                  const c = colors[status] || { text: 'text-gray-700', bg: 'bg-gray-50', dot: 'bg-gray-400' }
+                  return (
+                    <div key={status} className={`rounded-xl border border-gray-200 shadow-sm p-5 ${c.bg}`}>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <span className={`w-2 h-2 rounded-full ${c.dot}`} />
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{status}</p>
+                      </div>
+                      <p className={`text-2xl font-bold ${c.text}`}>{formatCurrency(amount)}</p>
+                      <p className="text-xs text-gray-400 mt-1">Amount by status</p>
+                    </div>
+                  )
+                })}
+
+                {/* In-kind cards */}
+                {financial && financial.byType && Object.entries(financial.byType).map(([type, count]) => (
+                  <div key={type} className="bg-white rounded-xl border border-primary-100 shadow-sm p-5">
+                    <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">In-Kind</p>
+                    <p className="text-2xl font-bold text-primary-600">{count}</p>
+                    <p className="text-sm font-medium text-gray-700 mt-1">{type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</p>
+                    <p className="text-xs text-gray-400">sponsorship{count !== 1 ? 's' : ''}</p>
+                  </div>
+                ))}
               </div>
             </div>
             {/* Sponsorship Activity Chart */}
